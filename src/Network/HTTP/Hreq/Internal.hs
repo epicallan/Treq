@@ -47,7 +47,6 @@ httpResponsetoResponse response = Response
  , resHttpVersion = HTTP.responseVersion response
  }
 
-
 requestToHTTPRequest :: BaseUrl -> Request -> HTTP.Request
 requestToHTTPRequest burl r = HTTP.defaultRequest
     { HTTP.method = reqMethod r

@@ -22,6 +22,7 @@ class RunHttp m => HasResponse api m where
 
 instance HasResponse subroute m
   => HasResponse ((path :: Symbol) :> subroute) m where
+
   type  HttpOutput (path :> subroute) = HttpOutput subroute
   httpRes _ = httpRes (Proxy @subroute)
 
@@ -30,6 +31,7 @@ instance
   , HasResponse rs m
   )
   => HasResponse ((ts :: [ReqContent Type]) :> Verb method rs ) m where
+
   type HttpOutput (ts :> Verb method rs) = HttpOutput rs
 
   httpRes _ = httpRes (Proxy @rs)
@@ -39,6 +41,7 @@ instance
   , HasResponse rs m
   )
   => HasResponse (Verb method rs ) m where
+
   type HttpOutput (Verb method rs) = HttpOutput rs
 
   httpRes _ = httpRes (Proxy @rs)
@@ -59,6 +62,7 @@ instance {-# OVERLAPPING #-}
   , TypeError ('Text "Raw response type should only be used in a singleton list")
   )
   => HasResponse ('Raw : r : rs) m where
+
   type HttpOutput ('Raw : r : rs) =
     TypeError ('Text "Raw should be used only in a singleton list")
 

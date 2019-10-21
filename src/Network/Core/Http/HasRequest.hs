@@ -30,6 +30,7 @@ instance
   , RunHttp m
   , HasRequest subroute m
   ) => HasRequest ((path :: Symbol) :> subroute) m where
+  
   type HttpInput (path :> subroute) = HttpInput subroute
 
   httpInput _ input req = do
@@ -119,7 +120,6 @@ encodeHlistAsReq xs input req = case (xs, input) of
 
   (SCons (SQueryFlags _a sflags) SNil, _)                      ->
     appendQueryFlags (toQueryFlags sflags) req
-
 
   (SCons (SQueryFlags _a sflags) sxs, ys)                      ->
      encodeHlistAsReq sxs ys

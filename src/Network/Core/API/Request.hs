@@ -3,7 +3,6 @@ module Network.Core.API.Request where
 import Data.Singletons
 import GHC.TypeLits
 
--- TODO: implement query, capture fl
 data ReqContent a =
       Params [(Symbol, a)]
     | QueryFlags a [Symbol]
@@ -15,7 +14,7 @@ data ReqContent a =
     -- TODO: Add HTTP version
 
 type Captures = 'Captures
-type QueryFlags = 'QueryFlags () -- stub for a
+type QueryFlags = 'QueryFlags ()
 type Params = 'Params
 type CaptureAll = 'CaptureAll
 type ReqBody = 'ReqBody

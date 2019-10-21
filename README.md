@@ -57,7 +57,7 @@ main' = do
   print res
   where
     baseUrl :: BaseUrl
-    baseUrl =  BaseUrl Http "example.com" 80 "user"
+    baseUrl = BaseUrl Http "example.com" 80 "user"
 
     newUser :: User
     newUser = User "Allan" 29

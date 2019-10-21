@@ -35,7 +35,7 @@ user = User "Allan" 29
 -------------------------------------------------------------------------------}
 
 singleQueryFlag :: RunHttp m => m Value
-singleQueryFlag = hreq @(QueryFlag "age" :>  GetJSON Value) Empty
+singleQueryFlag = hreq @(QueryFlag "age" :> GetJSON Value) Empty
 
 singleParam :: RunHttp m => m Value
 singleParam = hreq @(Param "age" Int :> GetJSON Value) $ singleton 10

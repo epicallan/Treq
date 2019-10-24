@@ -1,4 +1,3 @@
-{-# LANGUAGE PatternSynonyms  #-}
 {-# LANGUAGE TypeApplications #-}
 module Network.Core.Http.HasResponse where
 

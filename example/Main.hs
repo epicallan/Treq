@@ -76,7 +76,7 @@ type Query1 =
   Param "age" Int :> Param "height" Int :> QueryFlag "teacher" :> QueryFlag "new" :> GetJson User
 
 ex2 :: RunHttp m => m User
-ex2 = hreq @Query1 (20 :. 5 :.  Empty)
+ex2 = hreq @Query1 (20 :. 5 :. Empty)
 
 type Query2 =
      Params '[ "name" := String ]

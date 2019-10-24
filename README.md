@@ -70,11 +70,6 @@ getUserByName userName = hreq @(Capture "name" String :> GetJSON User) (userName
 
 ```
 
-## Attribution
-
-Hreq makes use of some code from the Servant client libraries where it makes sense to do so.
-I am thankful to Servant-client maintainers.
-
 ### Documentation
 
 This README is tested by `markdown-unlit` to make sure the code builds. To keep _that_ happy, we do need a `main` in this file, so ignore the following :)

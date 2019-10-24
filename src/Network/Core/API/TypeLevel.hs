@@ -6,18 +6,30 @@ import Network.Core.API.Internal
 import Network.Core.API.MediaType
 import Network.HTTP.Types (Header)
 import Web.HttpApiData (ToHttpApiData)
+import Network.Core.API.Verbs
+
+type family ApiToReq (a :: k) :: [ ReqContent Type]  where
+  ApiToReq (Verb m ts) =  '[ ]
+  ApiToReq ( (path :: Symbol) :> ts) = 'Path () path ': ApiToReq ts
+  ApiToReq ( (x :: ReqContent Type) :> ts) = x ': ApiToReq ts
+
+type family GetVerb (a :: k) :: Type  where
+  GetVerb (Verb m ts) =  Verb m ts
+  GetVerb (api :> sub) = GetVerb sub
 
 type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq '[] = '[]
 
+  HttpReq ('Path _ _ ': ts) = HttpReq ts
+
   HttpReq ('ReqBody ctyp a ': ts) = a ': HttpReq ts
 
-  HttpReq ('QueryFlags _a fs ': ts) = HttpReq ts
+  HttpReq ('QueryFlags _ _ ': ts) = HttpReq ts
 
   HttpReq ('Params ( '(s, a) ': ps ) ': ts) = a ': HttpReq ('Params ps ': ts)
   HttpReq ('Params '[] : ts) = HttpReq ts
 
-  HttpReq ('CaptureAll s t ': ts) = t ': HttpReq ts
+  HttpReq ('CaptureAll a ': ts) = [a] ': HttpReq ts
 
   HttpReq ('Captures ( '(s, a) ': cs ) ': ts) = a ': HttpReq ('Captures cs ': ts)
   HttpReq ('Captures '[] : ts) = HttpReq ts
@@ -25,14 +37,12 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq ('ReqHeaders ( '(s, a) ': hs ) ': ts) = a ': HttpReq ('ReqHeaders hs ': ts)
   HttpReq ('ReqHeaders '[] : ts) = HttpReq ts
 
-
 type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
   HttpRes '[] = '[]
   HttpRes ('ResBody ctyp a ': ts) = a ': HttpRes ts
   HttpRes ('ResHeaders (s ': hs) ': ts) = [Header] ': HttpRes ts
   HttpRes ('ResHeaders '[]  ': ts) = HttpRes ts
   HttpRes ('Raw a ': ts) = HttpRes ts
-
 
 type family HttpResConstraints (res :: [ResContent Type]) :: Constraint where
   HttpResConstraints '[] = ()
@@ -43,6 +53,8 @@ type family HttpResConstraints (res :: [ResContent Type]) :: Constraint where
 
 type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
   HttpReqConstraints '[] = ()
+
+  HttpReqConstraints ('Path _ path ': ts) = (KnownSymbol path, HttpReqConstraints ts)
 
   HttpReqConstraints ('ReqBody ctyp a ': ts ) =
     (HasMediaType ctyp, MediaEncode ctyp a, HttpReqConstraints ts)
@@ -57,8 +69,7 @@ type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
     (KnownSymbol s, ToHttpApiData a,  HttpReqConstraints ('Captures cs ': ts))
   HttpReqConstraints ('Captures '[] ': ts) =  HttpReqConstraints ts
 
-  HttpReqConstraints ('CaptureAll s a ': ts) =
-    (ToHttpApiData a, KnownSymbol s, HttpReqConstraints ts)
+  HttpReqConstraints ('CaptureAll a ': ts) = (ToHttpApiData [a], HttpReqConstraints ts)
 
   HttpReqConstraints ('ReqHeaders ('(s, a) ': hs) ': ts) =
      (KnownSymbol s, ToHttpApiData a, HttpReqConstraints ('ReqHeaders hs ': ts))
@@ -68,9 +79,9 @@ type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
 type family HttpSymbolTypePair (ts :: [(Symbol, Type)]) :: Constraint where
   HttpSymbolTypePair ts =  (All KnownSymbol (AllFsts ts), All ToHttpApiData (AllSnds ts))
 
--- | Cross check that there are no repeated instance of a Request content type
--- with in each Request type level list. For instance we want to have only
--- one ReqBody' or 'QueryFlags type with in each ReqContent type level list
+-- | Cross check that there are no repeated instance of an item
+-- with in a type level list. For instance we want to have only
+-- one 'ResBody' with in a Response type level list
 type family UniqMembers (ts :: [k]) (label :: Symbol) :: Constraint  where
   UniqMembers '[] label = ()
   UniqMembers (a ': ts) label = (UniqMember a ts label, UniqMembers ts label)

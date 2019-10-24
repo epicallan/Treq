@@ -6,12 +6,12 @@ import GHC.TypeLits
 data ResContent a =
     ResBody a a
   | ResHeaders [(Symbol, a)]
-  | Raw a -- | a is content type parameter, by default we should set it to JSON
-  -- ^ TODO: implement Raw JSON
+  | Raw a -- ^ TODO: treat a as a Reponse body type parameter
+          -- Such that one can get lazy or strict ByteString
 
 type ResBody = 'ResBody
 type ResHeaders = 'ResHeaders
-type Raw = 'Raw
+type Raw = 'Raw ()
 
 data instance Sing (a :: ResContent k) where
   SResBody :: Sing ctyp -> Sing a -> Sing ('ResBody ctyp a)

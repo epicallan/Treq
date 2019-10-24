@@ -21,7 +21,7 @@ main = do
   res <- runHreq baseUrl $ do
     x <-  hreq @(GetJSON Value) Empty
     y <-  hreq @(RawResponse GET) Empty
-    r <-  hreq @("hello" :> RawResponse GET) Empty
+    r <-  hreq @("hello" :> QueryFlag "teacher" :> GetJSON User) Empty
     return (x, y, r)
   print res
   where
@@ -44,11 +44,11 @@ singleCapture :: RunHttp m => m Value
 singleCapture = hreq @(Capture "age" Int :> GetJSON Value) (25 :. Empty)
 
 singleReqJsonBody :: RunHttp m => m User
-singleReqJsonBody = hreq @(JSONBody User :> PostJSON User) (user :. Empty)
+singleReqJsonBody = hreq @(JsonBody User :> PostJSON User) (user :. Empty)
 
 -- | Generic use of ReqBody type with any valid content type
 singleReqBody :: RunHttp m => m User
-singleReqBody = hreq @('[ ReqBody PlainText User ] :> PostJSON User) (user :. Empty)
+singleReqBody = hreq @(ReqBody PlainText User :> PostJSON User) (user :. Empty)
 
 withNoRequestComponent :: RunHttp m => m Value
 withNoRequestComponent = hreq @(GetJSON Value) Empty
@@ -64,16 +64,23 @@ rawResponse = hreq @(RawResponse GET) Empty
   Multi-Request & Multi Response component examples
 -------------------------------------------------------------------------------}
 
+-- | You can use type level lists for multiple value listing in Flags and Params
 type Query =
-  '[ Params '[ "age" := Int, "name" := String], QueryFlags '[ "teacher", "new"] ]
-  :> GetJSON User
+  Params '[ "age" := Int, "height" := Int] :> QueryFlags '[ "teacher", "new"] :> GetJSON User
 
-ex6 :: RunHttp m => m User
-ex6 = hreq @Query (1 :. "Allan" :. Empty)
+ex1 :: RunHttp m => m User
+ex1 = hreq @Query (20 :. 5 :.  Empty)
 
+-- | You can also use singular combinators to represent multiple values
 type Query1 =
-   '[ Params '[ "age" := Int, "name" := String] ]
-  :>  Get '[ ResBody JSON User, ResHeaders '[ "some-header-name" := String ] ]
+  Param "age" Int :> Param "height" Int :> QueryFlag "teacher" :> QueryFlag "new" :> GetJSON User
+
+ex2 :: RunHttp m => m User
+ex2 = hreq @Query1 (20 :. 5 :.  Empty)
+
+type Query2 =
+     Params '[ "name" := String ]
+  :> Get '[ ResBody JSON User, ResHeaders '[ "some-header-name" := String ] ]
 
 ex7 :: RunHttp m => m (Hlist '[ User, [Header] ])
-ex7 = hreq @Query1  (1 :. "Allan" :. Empty)
+ex7 = hreq @Query2  ("Allan" :. Empty)

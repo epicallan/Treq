@@ -1,5 +1,5 @@
-{-# LANGUAGE PatternSynonyms  #-}
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE PatternSynonyms      #-}
+{-# LANGUAGE TypeApplications     #-}
 module Network.Core.Http.HasRequest where
 
 import Data.Kind
@@ -14,64 +14,41 @@ import Web.HttpApiData (ToHttpApiData (..))
 import Network.Core.API
 import Network.Core.Http.Hlist
 import Network.Core.Http.Request
-import Network.Core.Http.Response
-import Network.Core.Http.RunHttp
 import Network.HTTP.Types (QueryItem)
 
 pattern Empty :: Hlist '[]
 pattern Empty = Nil
 
-class RunHttp m => HasRequest api m where
-   type HttpInput (api :: k) :: Type
-   httpInput :: sing api -> HttpInput api -> Request -> m Response
+-- | We need the verb api component 'Verb' so as to access
+-- Request method and content-type value
+class HasRequest (reqComponents :: k) (verb :: Type) where
+   type HttpInput reqComponents :: Type
+
+   httpReq
+     :: Proxy verb
+     -> Proxy reqComponents
+     -> HttpInput reqComponents
+     -> Request
+     -> Request
 
 instance
-  ( KnownSymbol path
-  , RunHttp m
-  , HasRequest subroute m
-  ) => HasRequest ((path :: Symbol) :> subroute) m where
-  
-  type HttpInput (path :> subroute) = HttpInput subroute
-
-  httpInput _ input req = do
-    let req' = req { reqPath = symbolVal (Proxy @path) }
-    httpInput (Proxy @subroute) input req'
-
-instance
-  ( HttpReqConstraints ts
-  , UniqMembers ts "Request"
-  , ReflectMethod method
-  , SingI ('Req ts)
-  , SingI ('Res rs)
-  , HttpResConstraints rs
-  , RunHttp m
+   ( HttpReqConstraints ts
+   , ReflectMethod method
+   , SingI ('Req ts)
+   , SingI ('Res rs)
+   , HttpResConstraints rs
   )
-  => HasRequest ((ts :: [ReqContent Type]) :> Verb method rs ) m where
+  => HasRequest (ts :: [ReqContent Type]) (Verb method rs) where
+  type HttpInput ts = Hlist (HttpReq ts)
 
-  type HttpInput (ts :> Verb method rs) = Hlist (HttpReq ts)
-
-  httpInput _ input req = case sing @('Req ts ) of
-    SReq xs -> do
-      let req' = encodeHlistAsReq xs input req
-      httpInput (Proxy @(Verb method rs)) Nil req'
-
-instance
-  ( RunHttp m
-  , ReflectMethod method
-  , SingI ('Res rs)
-  , HttpResConstraints rs
-  )
-  => HasRequest (Verb method rs ) m where
-
-  type HttpInput (Verb method rs) = Hlist '[]
-
-  httpInput _ _ req = do
-    let method' = reflectMethod (Proxy @method)
+  httpReq _ _ input req =
+    let method'      = reflectMethod (Proxy @method)
         acceptHeader = case sing @('Res rs) of
-                         SRes sx -> getAcceptHeader sx
-        req' = appendMethod method' $ req { reqAccept = acceptHeader }
+                         SRes ys -> getAcceptHeader ys
+        req'         = case sing @('Req ts) of
+                         SReq xs -> encodeHlistAsReq xs input req
 
-    runRequest $! req'
+    in appendMethod method' $ req' { reqAccept = acceptHeader }
 
 getAcceptHeader
   :: forall (rs :: [ ResContent Type]) . HttpResConstraints rs
@@ -91,6 +68,10 @@ encodeHlistAsReq
 encodeHlistAsReq xs input req = case (xs, input) of
   (SNil, _)                                                    ->
     req
+  (SCons (SPath _ spath) sxs, ys) ->
+    let path = withKnownSymbol spath (symbolVal spath)
+        req' = appendToPath path req
+    in encodeHlistAsReq sxs ys req'
 
   (SCons (SReqHeaders (SCons (STuple2 s _x) hs)) sxs, y :. ys) ->
     let headerName = fromString $ withKnownSymbol s (symbolVal s)
@@ -100,7 +81,7 @@ encodeHlistAsReq xs input req = case (xs, input) of
   (SCons (SReqHeaders SNil) sxs, ys)                           ->
     encodeHlistAsReq sxs ys req
 
-  (SCons (SCaptureAll _s _a) sxs, y :. ys)                     ->
+  (SCons (SCaptureAll _a) sxs, y :. ys)                        ->
     let req' = appendToPath (cs $ toUrlPiece y) req
     in encodeHlistAsReq sxs ys req'
 

@@ -27,7 +27,6 @@ instance (SingI content) => SingI ('Res content) where
 instance (SingI content) => SingI ('Req content) where
   sing = SReq sing
 
-
 -- | API Type combinators
 
 infixr 7 :>

@@ -8,5 +8,6 @@ data Response = Response
   , resHeaders     :: [Header]
   , resBody        :: ByteString
   -- ^ TODO: Turn into a type parameter so as to support streaming
+  -- among other things
   , resHttpVersion :: HttpVersion
   } deriving (Show, Eq)

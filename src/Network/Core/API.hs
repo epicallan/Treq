@@ -7,9 +7,6 @@ module Network.Core.API
     , Header
     , Status (..)
     ) where
-
-import GHC.TypeLits
-
 import Data.Kind
 import Data.Singletons.TypeRepTYPE ()
 import Network.Core.API.Internal
@@ -18,19 +15,7 @@ import Network.Core.API.TypeLevel
 import Network.Core.API.Verbs
 import Network.HTTP.Types (Header, Status (..))
 
--- | Single Request item Type synonyms
-
-type QueryFlag (s :: Symbol) = '[ QueryFlags '[ s ] ]
-
-type Param s t = '[ Params '[ s := t ] ]
-
-type Capture s t = '[ Captures '[ s := t] ]
-
-type CaptureAll' s t = '[ CaptureAll s t ]
-
-type JSONBody a  =  '[ ReqBody JSON a ]
-
-type ResHeader s t = '[ ResHeaders '[ s := t] ]
+type JsonBody (a :: Type) = ReqBody JSON a
 
 -- | Response Type synonyms
 
@@ -44,11 +29,11 @@ type PatchJSON a = Patch '[ ResBody JSON a]
 
 type DeleteJson a = Delete '[ResBody JSON a]
 
-type RawResponse v = Verb v '[ Raw () ]
+type RawResponse v = Verb v '[ Raw ]
 
 type EmptyResponse v = Verb v ('[ ] :: [ ResContent Type ])
 
--- | Doc-tests
+-- | TODO: Doc-tests
 --
 -- >>> data User = User
 
@@ -63,6 +48,7 @@ type EmptyResponse v = Verb v ('[ ] :: [ ResContent Type ])
 -- >>> type Ex5 = Param "name" String :> Get '[ ResBody JSON User, 'ResHeaders '[ "content" := String] ]
 
 -- >>> type Ex6 = "users" :> '[ Params '["some" := Int, "name" := String], ReqBody JSON User ] :> GetJSON User
+-- >> type Ex7 = "users" :> Params '[ "some" := Int, "name" :=String ] :> GetJSON User
 -- $setup
 --
 -- The doctests in this module are run with following preamble:

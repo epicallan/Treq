@@ -4,37 +4,20 @@ module Network.Core.Http.HasResponse where
 
 import Data.Kind
 import Data.Singletons.Prelude
+import Control.Monad.Except
 import GHC.TypeLits
+import Network.HTTP.Types (hContentType)
+import Network.HTTP.Media (MediaType, parseAccept, (//), matches)
 
 import Network.Core.API
 import Network.Core.Http.Hlist
 import Network.Core.Http.HttpError
 import Network.Core.Http.Response
-import Network.Core.Http.RunHttp
 
-pattern NoResponse :: Hlist '[]
-pattern NoResponse = Nil
+class MonadError HttpError m => HasResponse (a :: k) m where
+   type HttpOutput a :: Type
 
-class RunHttp m => HasResponse api m where
-   type HttpOutput (api :: k) :: Type
-
-   httpRes :: sing api -> Response -> m (HttpOutput api)
-
-instance HasResponse subroute m
-  => HasResponse ((path :: Symbol) :> subroute) m where
-
-  type  HttpOutput (path :> subroute) = HttpOutput subroute
-  httpRes _ = httpRes (Proxy @subroute)
-
-instance
-  ( UniqMembers rs "Response content"
-  , HasResponse rs m
-  )
-  => HasResponse ((ts :: [ReqContent Type]) :> Verb method rs ) m where
-
-  type HttpOutput (ts :> Verb method rs) = HttpOutput rs
-
-  httpRes _ = httpRes (Proxy @rs)
+   httpRes :: sing a -> Response -> m (HttpOutput a)
 
 instance
   ( UniqMembers rs "Response"
@@ -46,42 +29,42 @@ instance
 
   httpRes _ = httpRes (Proxy @rs)
 
-instance (RunHttp m) => HasResponse '[] m where
+instance (MonadError HttpError m) => HasResponse '[] m where
   type HttpOutput '[] = ()
 
   httpRes _ _ = return ()
 
-instance {-# OVERLAPPING #-} RunHttp m
+instance {-# OVERLAPPING #-} MonadError HttpError m
   => HasResponse '[ 'Raw a ] m where
   type HttpOutput '[ 'Raw a ] = Response
 
   httpRes _ = return
 
 instance {-# OVERLAPPING #-}
-  (RunHttp m
+  (MonadError HttpError m
   , TypeError ('Text "Raw response type should only be used in a singleton list")
   )
-  => HasResponse ('Raw : r : rs) m where
+  => HasResponse ('Raw a : r : rs) m where
 
-  type HttpOutput ('Raw : r : rs) =
+  type HttpOutput ('Raw a : r : rs) =
     TypeError ('Text "Raw should be used only in a singleton list")
 
   httpRes _ _ =  error "GHC Error"
 
 instance {-# OVERLAPPING #-}
   ( MediaDecode ctyp a
-  , RunHttp m
+  , MonadError HttpError m
   )
   => HasResponse '[ 'ResBody  ctyp a ] m where
   type HttpOutput '[ 'ResBody ctyp a ] = a
 
   httpRes _ = decodeAsBody (Proxy @ctyp)
 
--- | The following type instances below are overly restrictive to avoid
+-- | The following type instance is overly restrictive to avoid
 -- overlapping type family instance error.
 instance {-# OVERLAPPING #-}
   ( MediaDecode ctyp a
-  , RunHttp m
+  , MonadError HttpError m
   , SingI ('Res (r ': rs))
   , HttpResConstraints (r ': rs)
   ) => HasResponse ( 'ResBody ctyp a ': r ': rs ) m where
@@ -94,7 +77,7 @@ instance {-# OVERLAPPING #-}
 
 
 instance {-# OVERLAPPING #-}
-  ( RunHttp m
+  ( MonadError HttpError m
   , SingI ('Res ('ResHeaders hs ': rs))
   , HttpResConstraints ('ResHeaders hs ': rs)
   ) => HasResponse ('ResHeaders hs ': rs) m where
@@ -103,17 +86,29 @@ instance {-# OVERLAPPING #-}
   httpRes _ response = case sing @('Res ('ResHeaders hs ': rs)) of
     SRes xs -> decodeAsHlist xs response
 
-decodeAsBody -- | TODO: see  decodeAs used in Servant
-  :: (RunHttp m, MediaDecode ctyp a)
+decodeAsBody
+  :: forall ctyp a m sing . (MonadError HttpError m, MediaDecode ctyp a)
   => sing ctyp
   -> Response
   -> m a
-decodeAsBody proxy response = case decode proxy (resBody response) of
-  Left _err -> throwHttpError HttpError
-  Right val -> pure val
+decodeAsBody _ response = do
+  responseContentType <- checkContentType
+  unless (responseContentType `matches` accept) $ throwError HttpError
+  case decode ctypProxy (resBody response) of
+     Left _err -> throwError HttpError
+     Right val -> pure val
+  where
+    ctypProxy = Proxy @ctyp
+
+    accept = mediaType ctypProxy
+
+    checkContentType :: m MediaType
+    checkContentType  = case lookup hContentType $ resHeaders response of
+      Nothing -> return $ "application"//"octet-stream" -- | TODO: implement streaming
+      Just t  -> maybe (throwError HttpError) return $ parseAccept t
 
 decodeAsHlist
-  :: (RunHttp m, HttpResConstraints rs)
+  :: (MonadError HttpError m, HttpResConstraints rs)
   => Sing rs
   -> Response
   -> m (Hlist (HttpRes rs))

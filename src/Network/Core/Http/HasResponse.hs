@@ -93,9 +93,12 @@ decodeAsBody
   -> m a
 decodeAsBody _ response = do
   responseContentType <- checkContentType
-  unless (responseContentType `matches` accept) $ throwError HttpError
+
+  unless (responseContentType `matches` accept)
+    . throwError $ UnsupportedContentType accept response
+
   case decode ctypProxy (resBody response) of
-     Left _err -> throwError HttpError
+     Left err -> throwError $ DecodeFailure (unDecodeError err) response
      Right val -> pure val
   where
     ctypProxy = Proxy @ctyp
@@ -105,7 +108,7 @@ decodeAsBody _ response = do
     checkContentType :: m MediaType
     checkContentType  = case lookup hContentType $ resHeaders response of
       Nothing -> return $ "application"//"octet-stream" -- | TODO: implement streaming
-      Just t  -> maybe (throwError HttpError) return $ parseAccept t
+      Just t  -> maybe (throwError $ InvalidContentTypeHeader response) return $ parseAccept t
 
 decodeAsHlist
   :: (MonadError HttpError m, HttpResConstraints rs)

@@ -6,6 +6,7 @@ module Network.Core.API
     , module Network.Core.API
     , Header
     , Status (..)
+    , HeaderName
     ) where
 import Data.Kind
 import Data.Singletons.TypeRepTYPE ()
@@ -13,7 +14,9 @@ import Network.Core.API.Internal
 import Network.Core.API.MediaType
 import Network.Core.API.TypeLevel
 import Network.Core.API.Verbs
-import Network.HTTP.Types (Header, Status (..))
+import Network.HTTP.Types (Header, HeaderName, Status (..))
+
+type StatusCode = Int
 
 type JsonBody (a :: Type) = ReqBody JSON a
 

@@ -8,7 +8,6 @@ data Scheme =
   deriving (Show, Eq, Ord)
 
 -- | Simple data type to represent the target of HTTP requests
---   for servant's automatically-generated clients.
 data BaseUrl = BaseUrl
   { baseUrlScheme :: Scheme   -- ^ URI scheme to use
   , baseUrlHost   :: String   -- ^ host (eg "haskell.org")
@@ -16,8 +15,6 @@ data BaseUrl = BaseUrl
   , baseUrlPath   :: String   -- ^ path (eg "/a/b/c")
   } deriving (Show, Eq, Ord)
 
--- | >>> showBaseUrl <$> parseBaseUrl "api.example.com"
--- "http://api.example.com"
 showBaseUrl :: BaseUrl -> String
 showBaseUrl (BaseUrl urlscheme host port path) =
   schemeString ++ "//" ++ host ++ (portString </> path)

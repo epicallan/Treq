@@ -1,7 +1,7 @@
 {-# LANGUAGE TupleSections #-}
 module Network.HTTP.Hreq.Internal where
 
-import Control.Exception.Safe (MonadThrow, throwM)
+import Control.Exception.Safe (MonadThrow, SomeException (..), catch, throwM)
 import Control.Monad.Reader
 import qualified Data.ByteString.Lazy as LBS
 import Data.Maybe (maybeToList)
@@ -9,7 +9,7 @@ import Data.Singletons.TypeRepTYPE ()
 import Data.String.Conversions (cs)
 import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Media (renderHeader)
-import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery)
+import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCode)
 
 import Network.Core.Http
 import Network.HTTP.Hreq.Config
@@ -20,13 +20,24 @@ newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }
 instance RunHttp (Hreq IO) where
   runRequest req = do
     config <- ask
-    let manager' = httpManager config
-    let req' = requestToHTTPRequest (httpBaseUrl config) req
+    let manager = httpManager config
+    let httpRequest = requestToHTTPRequest (httpBaseUrl config) req
 
-    httpResponse <- liftIO $ HTTP.httpLbs req' manager'
-    return $ httpResponsetoResponse httpResponse
+    ehttpResponse <- liftIO . catchConnectionError $ HTTP.httpLbs httpRequest manager
+
+    response <- either throwHttpError (pure . httpResponsetoResponse) ehttpResponse
+
+    maybe (pure response) throwHttpError =<< checkResponse req response
 
   throwHttpError = throwM
+
+  checkResponse req response = do
+    statusRange <- asks httpStatuses
+    let code = statusCode $ resStatus response
+    pure $ if code >= statusLower statusRange && code <= statusUpper statusRange
+      then Just $ FailureResponse req response
+      else Nothing
+
 
 -- TODO: MonadBaseControl instances
 
@@ -75,3 +86,8 @@ requestToHTTPRequest burl r = HTTP.defaultRequest
     isSecure = case baseUrlScheme burl of
         Http  -> False
         Https -> True
+
+catchConnectionError :: IO a -> IO (Either HttpError a)
+catchConnectionError action =
+  catch (Right <$> action)
+    $ \e -> pure . Left . ConnectionError $ SomeException (e :: HTTP.HttpException)

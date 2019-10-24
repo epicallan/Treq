@@ -8,3 +8,5 @@ class Monad m => RunHttp m where
   runRequest :: Request -> m Response
 
   throwHttpError :: HttpError -> m b
+
+  checkResponse :: Request -> Response -> m (Maybe HttpError)

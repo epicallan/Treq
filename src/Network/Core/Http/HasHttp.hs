@@ -28,7 +28,7 @@ hreq'
   -> m (HttpOutput v)
 hreq' _ reqInput = do
   let req = httpReq (Proxy @v) (Proxy @ts) reqInput defaultRequest
-  response <- runRequest req
+  response <- runRequest $! req
   lift' $ httpRes (Proxy @v) response
   where
     lift' = either throwHttpError pure
@@ -38,3 +38,9 @@ hreq
   => HttpInput ts
   -> m (HttpOutput v)
 hreq = hreq' (Proxy @api)
+
+hreqWithMedia
+  :: forall api ts v m. HasHttp api ts v (Either HttpError) m
+  => HttpInput ts
+  -> m (HttpOutput v)
+hreqWithMedia = hreq' (Proxy @api)

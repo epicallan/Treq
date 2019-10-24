@@ -52,7 +52,7 @@ main' = do
   res <- runHreq baseUrl $ do
     createdUser <- createUser newUser
     myUser      <- getUserByName "allan"
-    allUsers    <- hreq @(GetJSON [User]) Empty
+    allUsers    <- hreq @(GetJson [User]) Empty
     return (createdUser, myUser, allUsers)
   print res
   where
@@ -63,10 +63,10 @@ main' = do
     newUser = User "Allan" 29
 
 createUser :: RunHttp m => User -> m User
-createUser user = hreq @(JSONBody User :> PostJSON User) (user :. Empty)
+createUser user = hreq @(JSONBody User :> PostJson User) (user :. Empty)
 
 getUserByName :: RunHttp m => String -> m User
-getUserByName userName = hreq @(Capture "name" String :> GetJSON User) (userName  :. Empty)
+getUserByName userName = hreq @(Capture "name" String :> GetJson User) (userName  :. Empty)
 
 ```
 

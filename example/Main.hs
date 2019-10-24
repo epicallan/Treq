@@ -19,9 +19,9 @@ main :: IO ()
 main = do
   print baseUrl
   res <- runHreq baseUrl $ do
-    x <-  hreq @(GetJSON Value) Empty
+    x <-  hreq @(GetJson Value) Empty
     y <-  hreq @(RawResponse GET) Empty
-    r <-  hreq @("hello" :> QueryFlag "teacher" :> GetJSON User) Empty
+    r <-  hreq @("hello" :> QueryFlag "teacher" :> GetJson User) Empty
     return (x, y, r)
   print res
   where
@@ -35,23 +35,23 @@ user = User "Allan" 29
 -------------------------------------------------------------------------------}
 
 singleQueryFlag :: RunHttp m => m Value
-singleQueryFlag = hreq @(QueryFlag "age" :> GetJSON Value) Empty
+singleQueryFlag = hreq @(QueryFlag "age" :> GetJson Value) Empty
 
 singleParam :: RunHttp m => m Value
-singleParam = hreq @(Param "age" Int :> GetJSON Value) $ singleton 10
+singleParam = hreq @(Param "age" Int :> GetJson Value) $ singleton 10
 
 singleCapture :: RunHttp m => m Value
-singleCapture = hreq @(Capture "age" Int :> GetJSON Value) (25 :. Empty)
+singleCapture = hreq @(Capture "age" Int :> GetJson Value) (25 :. Empty)
 
 singleReqJsonBody :: RunHttp m => m User
-singleReqJsonBody = hreq @(JsonBody User :> PostJSON User) (user :. Empty)
+singleReqJsonBody = hreq @(JsonBody User :> PostJson User) (user :. Empty)
 
 -- | Generic use of ReqBody type with any valid content type
 singleReqBody :: RunHttp m => m User
-singleReqBody = hreq @(ReqBody PlainText User :> PostJSON User) (user :. Empty)
+singleReqBody = hreq @(ReqBody PlainText User :> PostJson User) (user :. Empty)
 
 withNoRequestComponent :: RunHttp m => m Value
-withNoRequestComponent = hreq @(GetJSON Value) Empty
+withNoRequestComponent = hreq @(GetJson Value) Empty
 
 emptyResponse :: RunHttp m => m ()
 emptyResponse = hreq @(EmptyResponse GET) Empty
@@ -66,14 +66,14 @@ rawResponse = hreq @(RawResponse GET) Empty
 
 -- | You can use type level lists for multiple value listing in Flags and Params
 type Query =
-  Params '[ "age" := Int, "height" := Int] :> QueryFlags '[ "teacher", "new"] :> GetJSON User
+  Params '[ "age" := Int, "height" := Int] :> QueryFlags '[ "teacher", "new"] :> GetJson User
 
 ex1 :: RunHttp m => m User
 ex1 = hreq @Query (20 :. 5 :.  Empty)
 
 -- | You can also use singular combinators to represent multiple values
 type Query1 =
-  Param "age" Int :> Param "height" Int :> QueryFlag "teacher" :> QueryFlag "new" :> GetJSON User
+  Param "age" Int :> Param "height" Int :> QueryFlag "teacher" :> QueryFlag "new" :> GetJson User
 
 ex2 :: RunHttp m => m User
 ex2 = hreq @Query1 (20 :. 5 :.  Empty)

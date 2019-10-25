@@ -14,7 +14,6 @@
     ===Attribution
     Some of the code in this module was directly borrowed from the Singletons library
 -}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeInType #-}
 module Data.Singletons where
 

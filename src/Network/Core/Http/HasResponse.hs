@@ -1,10 +1,12 @@
 {-# LANGUAGE TypeApplications #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Network.Core.Http.HasResponse where
 
 import Data.Kind
-import Data.Singletons.Prelude
+import Data.Singletons
 import Control.Monad.Except
 import GHC.TypeLits
+import Data.Proxy
 import Network.HTTP.Types (hContentType)
 import Network.HTTP.Media (MediaType, parseAccept, (//), matches)
 
@@ -40,9 +42,7 @@ instance {-# OVERLAPPING #-} MonadError HttpError m
   httpRes _ = return
 
 instance {-# OVERLAPPING #-}
-  (MonadError HttpError m
-  , TypeError ('Text "Raw response type should only be used in a singleton list")
-  )
+  MonadError HttpError m
   => HasResponse ('Raw a : r : rs) m where
 
   type HttpOutput ('Raw a : r : rs) =
@@ -86,7 +86,8 @@ instance {-# OVERLAPPING #-}
     SRes xs -> decodeAsHlist xs response
 
 decodeAsBody
-  :: forall ctyp a m sing . (MonadError HttpError m, MediaDecode ctyp a)
+  :: forall ctyp a m sing
+  . (MonadError HttpError m, MediaDecode ctyp a)
   => sing ctyp
   -> Response
   -> m a
@@ -100,8 +101,10 @@ decodeAsBody _ response = do
      Left err -> throwError $ DecodeFailure (unDecodeError err) response
      Right val -> pure val
   where
-    ctypProxy = Proxy @ctyp
+    ctypProxy :: Proxy ctyp
+    ctypProxy = Proxy
 
+    accept :: MediaType
     accept = mediaType ctypProxy
 
     checkContentType :: m MediaType

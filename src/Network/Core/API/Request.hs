@@ -1,5 +1,6 @@
 module Network.Core.API.Request where
 
+import Data.Kind (Type)
 import Data.Singletons
 import GHC.TypeLits
 
@@ -29,32 +30,34 @@ type Param s t = Params '[ '( s,  t ) ]
 
 type Capture s t = Captures '[ '( s, t) ]
 
-data instance Sing (a :: ReqContent k) where
-  SPath :: Sing a -> Sing s -> Sing ('Path a s)
-  SParams :: Sing ts -> Sing ('Params ts)
-  SQueryFlags :: Sing a -> Sing ts -> Sing ('QueryFlags a ts)
-  SCaptures :: Sing ts -> Sing ('Captures ts)
-  SCaptureAll :: Sing a -> Sing (CaptureAll a)
-  SReqBody :: Sing ctyp -> Sing a -> Sing ('ReqBody ctyp a)
-  SReqHeaders :: Sing a -> Sing ('ReqHeaders a)
+data SReqContent (a :: ReqContent Type)
+  = forall t s . a ~ 'Path t s => SPath (Sing t) (Sing s)
+  | forall ts (b :: Type) . a ~ 'QueryFlags b ts => SQueryFlags (Sing b) (Sing ts)
+  | forall ts . a ~ 'CaptureAll ts => SCaptureAll (Sing ts)
+  | forall ts . a ~ 'Captures ts => SCaptures (Sing ts)
+  | forall ctyp b . a ~ 'ReqBody ctyp b => SReqBody (Sing ctyp) (Sing b)
+  | forall ts . a ~ ReqHeaders ts => SReqHeaders (Sing ts)
+  | forall ts . a ~ Params ts => SParams (Sing ts)
 
-instance (SingI a, SingI s) => SingI ('Path a s) where
+type instance Sing = SReqContent
+
+instance (SingI a, SingI s) => SingI ('Path a s :: ReqContent Type) where
   sing = SPath sing sing
 
-instance SingI ts => SingI ('Params ts) where
+instance SingI ts => SingI ('Params ts :: ReqContent Type) where
   sing = SParams sing
 
-instance (SingI a, SingI ts) => SingI ('QueryFlags a ts) where
+instance (SingI a, SingI ts) => SingI ('QueryFlags a ts :: ReqContent Type) where
   sing = SQueryFlags sing sing
 
-instance SingI ts => SingI ('Captures ts) where
+instance SingI ts => SingI ('Captures ts :: ReqContent Type) where
   sing = SCaptures sing
 
-instance (SingI a) => SingI ('CaptureAll a) where
+instance (SingI a) => SingI ('CaptureAll a :: ReqContent Type) where
   sing = SCaptureAll sing
 
-instance (SingI a, SingI ctyp) => SingI ('ReqBody ctyp a) where
+instance (SingI a, SingI ctyp) => SingI ('ReqBody ctyp a :: ReqContent Type) where
   sing = SReqBody sing sing
 
-instance SingI a => SingI ('ReqHeaders a) where
+instance SingI a => SingI ('ReqHeaders a :: ReqContent Type) where
   sing = SReqHeaders sing

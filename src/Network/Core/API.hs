@@ -9,7 +9,6 @@ module Network.Core.API
     , HeaderName
     ) where
 import Data.Kind
-import Data.Singletons.TypeRepTYPE ()
 import Network.Core.API.Internal
 import Network.Core.API.MediaType
 import Network.Core.API.TypeLevel

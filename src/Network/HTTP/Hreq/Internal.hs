@@ -5,7 +5,6 @@ import Control.Exception.Safe (MonadThrow, SomeException (..), catch, throwM)
 import Control.Monad.Reader
 import qualified Data.ByteString.Lazy as LBS
 import Data.Maybe (maybeToList)
-import Data.Singletons.TypeRepTYPE ()
 import Data.String.Conversions (cs)
 import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Media (renderHeader)

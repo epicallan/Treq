@@ -1,9 +1,10 @@
 module Network.HTTP.Hreq.Config where
 
-import Network.Core.API (StatusCode)
-import Network.Core.Http
 import qualified Network.HTTP.Client as C
 import qualified Network.HTTP.Client.TLS as TLS
+
+import Network.Core.API (StatusCode)
+import Network.Core.Http
 
 -- | Valid Response status code range
 data StatusRange = StatusRange

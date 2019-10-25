@@ -1,12 +1,10 @@
 module Network.Core.API.Internal
   ( module Network.Core.API.Request
   , module Network.Core.API.Response
-  , Api (..)
-  , Sing (SRes, SReq)
-  , (:>)
-  , (:=)
+  , module Network.Core.API.Internal
   ) where
 
+import Data.Kind (Type)
 import Data.Singletons
 import GHC.TypeLits
 
@@ -17,14 +15,15 @@ data Api a =
     Req [ ReqContent a]
   | Res [ ResContent a ]
 
-data instance Sing (a :: Api k) where
-  SReq :: Sing content -> Sing ('Req content)
-  SRes :: Sing content -> Sing ('Res content)
+data SApi (a :: Api Type)
+  = forall b . a ~ 'Req b => SReq (Sing b)
+  | forall b . a ~ 'Res b => SRes (Sing b)
+type instance Sing = SApi
 
-instance (SingI content) => SingI ('Res content) where
+instance (SingI content) => SingI ('Res content :: Api Type) where
   sing = SRes sing
 
-instance (SingI content) => SingI ('Req content) where
+instance (SingI content) => SingI ('Req content :: Api Type) where
   sing = SReq sing
 
 -- | API Type combinators

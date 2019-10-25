@@ -1,7 +1,9 @@
 module Network.Core.Http.Request where
 
+import Prelude ()
+import Prelude.Compat
+
 import Data.ByteString as B
-import Data.Monoid ((<>))
 import GHC.Generics
 import Network.HTTP.Media (MediaType)
 import Network.HTTP.Types (Header, HeaderName, HttpVersion (..), Method, QueryItem, http11,
@@ -41,7 +43,6 @@ appendToQueryString
   -> Request
 appendToQueryString queryItem req =
   req { reqQueryString = queryItem : reqQueryString req }
-  -- ^ TODO: we probably need to reverse the query list
 
 addHeader :: ToHttpApiData a => HeaderName -> a -> Request -> Request
 addHeader name val req =

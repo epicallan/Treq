@@ -1,12 +1,15 @@
 {-# LANGUAGE PatternSynonyms      #-}
 {-# LANGUAGE TypeApplications     #-}
+{-# LANGUAGE TypeInType #-}
 module Network.Core.Http.HasRequest where
 
+import Prelude ()
+import Prelude.Compat
+
 import Data.Kind
-import Data.List (foldr)
 import Data.Proxy
-import Data.Singletons.Prelude hiding (All)
-import Data.Singletons.TypeLits
+import Data.Singletons
+import GHC.TypeLits
 import Data.String (fromString)
 import Data.String.Conversions (cs)
 import Web.HttpApiData (ToHttpApiData (..))
@@ -60,7 +63,7 @@ getAcceptHeader = \case
   SCons (SResHeaders _) rs -> getAcceptHeader rs
 
 encodeHlistAsReq
-  :: forall (ts :: [ReqContent Type]) . HttpReqConstraints ts
+  :: forall (ts :: [ReqContent Type]). (HttpReqConstraints ts)
   => Sing ts
   -> Hlist (HttpReq ts)
   -> Request

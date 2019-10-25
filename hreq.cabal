@@ -48,8 +48,8 @@ library
     , Data.Singletons
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData
   build-depends:
-      base >=4.9 && < 4.14
-    , base-compat >= 0.11
+      base >=4.9 && < 5
+    , base-compat >= 0.9.1 && 0.12
     , aeson
     , bytestring
     , http-api-data

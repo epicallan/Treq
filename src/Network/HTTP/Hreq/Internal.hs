@@ -1,6 +1,9 @@
 {-# LANGUAGE TupleSections #-}
 module Network.HTTP.Hreq.Internal where
 
+import Prelude ()
+import Prelude.Compat
+
 import Control.Exception.Safe (MonadThrow, SomeException (..), catch, throwM)
 import Control.Monad.Reader
 import qualified Data.ByteString.Lazy as LBS

@@ -12,9 +12,10 @@ license:        MIT
 license-file:   LICENSE.md
 extra-doc-files: CHANGELOG.md, README.md
 tested-with:
-   GHC  ==8.4.4
+   GHC  ==8.2.2
+    ||  ==8.4.4
     ||  ==8.6.5
-    ||  ==8.8.8
+    ||  ==8.8.1
 build-type:     Simple
 
 source-repository head
@@ -47,7 +48,7 @@ library
     , Data.Singletons
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData
   build-depends:
-      base >=4.11 && < 4.14
+      base >=4.9 && < 4.14
     , base-compat >= 0.11
     , aeson >= 1.4.1
     , bytestring

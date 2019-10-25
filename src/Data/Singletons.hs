@@ -57,7 +57,7 @@ withKnownSymbol SSym f = f
 -- | Lists
 ----------------------
 
-data SList :: forall k. [k] -> Type where
+data SList :: [k] -> Type where
   SNil :: SList '[]
   SCons :: forall k (h :: k) (t :: [k]). Sing h -> SList t -> SList (h ': t)
 

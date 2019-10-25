@@ -49,7 +49,7 @@ library
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData
   build-depends:
       base >=4.9 && < 5
-    , base-compat >= 0.9.1 && 0.12
+    , base-compat >= 0.10.5 && < 0.13
     , aeson
     , bytestring
     , http-api-data

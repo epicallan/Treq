@@ -8,7 +8,7 @@ import Control.Monad.Except
 import GHC.TypeLits
 import Data.Proxy
 import Network.HTTP.Types (hContentType)
-import Network.HTTP.Media (MediaType, parseAccept, (//), matches)
+import Network.HTTP.Media (parseAccept, (//), matches)
 
 import Network.Core.API
 import Network.Core.Http.Hlist

@@ -4,7 +4,7 @@ language: haskell
 git:
   depth: 2
 
-cabal: "2.0"
+cabal: "3.0"
 
 cache:
   directories:

@@ -3,7 +3,7 @@ module Network.Core.API.MediaType
   , MediaType
   )where
 
-import Control.Exception.Safe
+import Control.Exception
 import Data.Aeson as A
 import Data.Bifunctor
 import Data.ByteString as B

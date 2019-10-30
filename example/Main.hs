@@ -17,15 +17,13 @@ data User = User
 
 main :: IO ()
 main = do
-  print baseUrl
   res <- runHreq baseUrl $ do
     x <-  hreq @(GetJson Value) Empty
     y <-  hreq @(RawResponse GET) Empty
-    r <-  hreq @("hello" :> QueryFlag "teacher" :> GetJson User) Empty
-    return (x, y, r)
+    return (x, y)
   print res
   where
-    baseUrl = BaseUrl Http "trequest.free.beeceptor.com" 80 ""
+    baseUrl = BaseUrl Http "trequest.free.beeceptor.com" 80 "hello"
 
 user :: User
 user = User "Allan" 29

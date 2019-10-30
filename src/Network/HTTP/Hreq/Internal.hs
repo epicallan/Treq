@@ -4,7 +4,7 @@ module Network.HTTP.Hreq.Internal where
 import Prelude ()
 import Prelude.Compat
 
-import Control.Exception.Safe (MonadThrow, SomeException (..), catch, throwM)
+import Control.Monad.Catch (SomeException (..), catch, throwM)
 import Control.Monad.Reader
 import qualified Data.ByteString.Lazy as LBS
 import Data.Maybe (maybeToList)
@@ -17,11 +17,12 @@ import Network.Core.Http
 import Network.HTTP.Hreq.Config
 
 newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadReader HttpConfig, MonadThrow)
+  deriving (Functor, Applicative, Monad, MonadReader HttpConfig, MonadTrans, MonadIO)
 
 instance RunHttp (Hreq IO) where
-  runRequest req = do
+  runHttp req = do
     config <- ask
+
     let manager = httpManager config
     let httpRequest = requestToHTTPRequest (httpBaseUrl config) req
 
@@ -31,7 +32,7 @@ instance RunHttp (Hreq IO) where
 
     maybe (pure response) throwHttpError =<< checkResponse req response
 
-  throwHttpError = throwM
+  throwHttpError err = Hreq $ throwM err >>= return
 
   checkResponse req response = do
     statusRange <- asks httpStatuses
@@ -41,16 +42,16 @@ instance RunHttp (Hreq IO) where
       else Nothing
 
 
--- TODO: MonadBaseControl instances
+-- TODO: MonadUnliftIO or MonadBaseControl instances
 
 runHreq :: MonadIO m => BaseUrl -> Hreq m a -> m a
-runHreq baseUrl hrequest = do
+runHreq baseUrl action = do
   config <- liftIO $ createDefConfig baseUrl
 
-  runHreqWithConfig config hrequest
+  runHreqWithConfig config action
 
 runHreqWithConfig :: HttpConfig -> Hreq m a -> m a
-runHreqWithConfig config hrequest = runReaderT (runHreq' hrequest) config
+runHreqWithConfig config action = runReaderT (runHreq' action) config
 
 httpResponsetoResponse :: HTTP.Response LBS.ByteString -> Response
 httpResponsetoResponse response = Response

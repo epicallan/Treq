@@ -28,8 +28,10 @@ hreq'
   -> m (HttpOutput v)
 hreq' _ reqInput = do
   let req = httpReq (Proxy @v) (Proxy @ts) reqInput defaultRequest
-  response <- runRequest $! req
-  lift' $ httpRes (Proxy @v) response
+
+  response <- runHttp $! req
+
+  lift' $ httpRes (Proxy @v) $! response
   where
     lift' = either throwHttpError pure
 

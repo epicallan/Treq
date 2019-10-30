@@ -75,7 +75,7 @@ getUserByName userName = hreq @(Capture "name" String :> GetJson User) (userName
 
 ### Attribution
 
-Hreq borrows some code from servant-client where it makes sense to.
+Hreq is heavily inspired by servant-client.
 
 ### Documentation
 

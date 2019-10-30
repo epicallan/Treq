@@ -4,11 +4,14 @@ module Network.HTTP.Hreq.Internal where
 import Prelude ()
 import Prelude.Compat
 
+import Control.Concurrent.STM.TVar
 import Control.Monad.Catch (SomeException (..), catch, throwM)
 import Control.Monad.Reader
+import Control.Monad.STM (STM, atomically)
 import qualified Data.ByteString.Lazy as LBS
 import Data.Maybe (maybeToList)
 import Data.String.Conversions (cs)
+import Data.Time.Clock (UTCTime, getCurrentTime)
 import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Media (renderHeader)
 import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCode)
@@ -24,9 +27,11 @@ instance RunHttp (Hreq IO) where
     config <- ask
 
     let manager = httpManager config
+    let mcookieJar = httpCookieJar config
     let httpRequest = requestToHTTPRequest (httpBaseUrl config) req
 
-    ehttpResponse <- liftIO . catchConnectionError $ HTTP.httpLbs httpRequest manager
+    ehttpResponse <- liftIO . catchConnectionError
+                       $ performHttpRequest httpRequest manager mcookieJar
 
     response <- either throwHttpError (pure . httpResponsetoResponse) ehttpResponse
 
@@ -41,7 +46,6 @@ instance RunHttp (Hreq IO) where
       then Just $ FailureResponse req response
       else Nothing
 
-
 -- TODO: MonadUnliftIO or MonadBaseControl instances
 
 runHreq :: MonadIO m => BaseUrl -> Hreq m a -> m a
@@ -52,6 +56,44 @@ runHreq baseUrl action = do
 
 runHreqWithConfig :: HttpConfig -> Hreq m a -> m a
 runHreqWithConfig config action = runReaderT (runHreq' action) config
+
+performHttpRequest
+  :: HTTP.Request
+  -> HTTP.Manager
+  -> Maybe (TVar HTTP.CookieJar)
+  -> IO (HTTP.Response LBS.ByteString)
+performHttpRequest request manager mcookieJar = case mcookieJar of
+  Nothing -> HTTP.httpLbs request manager
+  Just cj -> do
+    req' <- cookieJarRequest cj request
+    HTTP.withResponseHistory req' manager $ updateWithResponseCookies cj
+  where
+    cookieJarRequest :: TVar HTTP.CookieJar -> HTTP.Request -> IO HTTP.Request
+    cookieJarRequest cj req = do
+      now <- getCurrentTime
+      atomically $ do
+        oldCookieJar <- readTVar cj
+        let (newReq, newCookieJar) = HTTP.insertCookiesIntoRequest req oldCookieJar now
+        writeTVar cj newCookieJar
+        pure newReq
+
+    updateWithResponseCookies
+      :: TVar HTTP.CookieJar
+      -> HTTP.HistoriedResponse HTTP.BodyReader
+      -> IO (HTTP.Response LBS.ByteString)
+    updateWithResponseCookies cj responses = do
+        now <- getCurrentTime
+        bss <- HTTP.brConsume $ HTTP.responseBody fRes
+        let fRes'        = fRes { HTTP.responseBody = LBS.fromChunks bss }
+            allResponses = HTTP.hrRedirects responses <> [(fReq, fRes')]
+        atomically $ mapM_ (updateCookieJar now) allResponses
+        return fRes'
+      where
+          updateCookieJar :: UTCTime -> (HTTP.Request, HTTP.Response LBS.ByteString) -> STM ()
+          updateCookieJar now' (req', res') = modifyTVar' cj (fst . HTTP.updateCookieJar res' req' now')
+
+          fReq = HTTP.hrFinalRequest responses
+          fRes = HTTP.hrFinalResponse responses
 
 httpResponsetoResponse :: HTTP.Response LBS.ByteString -> Response
 httpResponsetoResponse response = Response

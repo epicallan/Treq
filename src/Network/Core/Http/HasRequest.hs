@@ -17,6 +17,7 @@ import Web.HttpApiData (ToHttpApiData (..))
 import Network.Core.API
 import Network.Core.Http.Hlist
 import Network.Core.Http.Request
+import Network.Core.Http.BasicAuth
 import Network.HTTP.Types (QueryItem)
 
 pattern Empty :: Hlist '[]
@@ -71,9 +72,14 @@ encodeHlistAsReq
 encodeHlistAsReq xs input req = case (xs, input) of
   (SNil, _)                                                    ->
     req
+
   (SCons (SPath _ spath) sxs, ys) ->
     let path = withKnownSymbol spath (symbolVal spath)
         req' = appendToPath path req
+    in encodeHlistAsReq sxs ys req'
+
+  (SCons (SBasicAuth _ _) sxs, y :. ys)                        ->
+    let req' = basicAuthReq y req
     in encodeHlistAsReq sxs ys req'
 
   (SCons (SReqHeaders (SCons (STuple2 s _x) hs)) sxs, y :. ys) ->

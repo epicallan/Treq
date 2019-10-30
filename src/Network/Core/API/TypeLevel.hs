@@ -6,6 +6,7 @@ import Network.Core.API.Internal
 import Network.Core.API.MediaType
 import Network.HTTP.Types (Header)
 import Web.HttpApiData (ToHttpApiData)
+import Network.Core.Http.BasicAuth (BasicAuthData)
 import Network.Core.API.Verbs
 
 type family ApiToReq (a :: k) :: [ ReqContent Type]  where
@@ -23,6 +24,8 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq ('Path _ _ ': ts) = HttpReq ts
 
   HttpReq ('ReqBody ctyp a ': ts) = a ': HttpReq ts
+
+  HttpReq ('BasicAuth _ _ : ts) = BasicAuthData ': HttpReq ts
 
   HttpReq ('QueryFlags _ _ ': ts) = HttpReq ts
 
@@ -55,6 +58,8 @@ type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
   HttpReqConstraints '[] = ()
 
   HttpReqConstraints ('Path _ path ': ts) = (KnownSymbol path, HttpReqConstraints ts)
+
+  HttpReqConstraints ('BasicAuth _ _ ': ts) = HttpReqConstraints ts
 
   HttpReqConstraints ('ReqBody ctyp a ': ts ) =
     (HasMediaType ctyp, MediaEncode ctyp a, HttpReqConstraints ts)

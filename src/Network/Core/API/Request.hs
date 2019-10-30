@@ -6,11 +6,11 @@ import GHC.TypeLits
 
 
 data ReqContent a =
-      Path a Symbol -- ^ a is not used, its here for type checking
+      Path a Symbol
     | Params [(Symbol, a)]
     | QueryFlags a [Symbol]
-    -- ^ We don't really need the a, its here to appease type checking gods
     | Captures [(Symbol, a)]
+    | BasicAuth a Symbol
     | CaptureAll a
     | ReqBody a a
     | ReqHeaders [(Symbol, a)]
@@ -21,6 +21,7 @@ type Params = 'Params
 type ReqBody = 'ReqBody
 type ReqHeaders = 'ReqHeaders
 type CaptureAll = 'CaptureAll
+type BasicAuth = 'BasicAuth ()
 
 type Path = 'Path ()
 
@@ -38,8 +39,12 @@ data SReqContent (a :: ReqContent Type)
   | forall ctyp b . a ~ 'ReqBody ctyp b => SReqBody (Sing ctyp) (Sing b)
   | forall ts . a ~ ReqHeaders ts => SReqHeaders (Sing ts)
   | forall ts . a ~ Params ts => SParams (Sing ts)
+  | forall t s . a ~ 'BasicAuth t s => SBasicAuth (Sing t) (Sing s)
 
 type instance Sing = SReqContent
+
+instance (SingI a, SingI s) => SingI ('BasicAuth a s :: ReqContent Type) where
+  sing = SBasicAuth sing sing
 
 instance (SingI a, SingI s) => SingI ('Path a s :: ReqContent Type) where
   sing = SPath sing sing

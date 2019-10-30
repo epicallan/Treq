@@ -8,9 +8,11 @@ module Network.Core.Http
   , module Network.Core.Http.RunHttp
   , module Network.Core.Http.HttpError
   , module Network.Core.Http.HasHttp
+  , module Network.Core.Http.BasicAuth
   ) where
 
 import Network.Core.Http.BaseUrl
+import Network.Core.Http.BasicAuth
 import Network.Core.Http.HasHttp
 import Network.Core.Http.HasRequest
 import Network.Core.Http.HasResponse

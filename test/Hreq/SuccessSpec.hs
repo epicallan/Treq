@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveAnyClass   #-}
 {-# LANGUAGE TypeApplications #-}
 module Hreq.SuccessSpec (spec) where
 

@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveAnyClass   #-}
+{-# LANGUAGE TypeApplications #-}
 module Hreq.SuccessSpec (spec) where
 
 import Data.Proxy
@@ -46,5 +47,5 @@ successSpec = do
        let x = hreq @(GetJson TestUser) Empty
            res  = case runHttpPure @'Default  baseUrl x of
                      RunHttp _ y -> y
-                     Throw e        -> error (show e)
+                     Throw e     -> error (show e)
        res `shouldBe` testUser

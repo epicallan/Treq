@@ -6,8 +6,7 @@ import Network.HTTP.Hreq
 import Test.Hspec
 
 spec :: Spec
-spec = describe "Servant.FailSpec" $ do
-    failSpec
+spec = describe "Hreq.FailSpec" failSpec
 
 failSpec :: Spec
 failSpec = do

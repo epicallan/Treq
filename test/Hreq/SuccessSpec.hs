@@ -8,8 +8,7 @@ import Hreq.Util (TestState (..), TestUser (..), defaultResponse, runHttpPure)
 import Network.HTTP.Hreq
 
 spec :: Spec
-spec = describe "Servant.SuccessSpec" $ do
-    successSpec
+spec = describe "Hreq.SuccessSpec" successSpec
 
 testUser :: TestUser
 testUser = TestUser "Allan" 29

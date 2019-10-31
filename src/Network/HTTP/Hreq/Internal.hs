@@ -1,3 +1,4 @@
+{-# LANGUAGE InstanceSigs  #-}
 {-# LANGUAGE TupleSections #-}
 module Network.HTTP.Hreq.Internal where
 
@@ -6,6 +7,7 @@ import Prelude.Compat
 
 import Control.Concurrent.STM.TVar
 import Control.Monad.Catch (SomeException (..), catch, throwM)
+import Control.Monad.IO.Unlift (MonadUnliftIO (..), wrappedWithRunInIO)
 import Control.Monad.Reader
 import Control.Monad.STM (STM, atomically)
 import qualified Data.ByteString.Lazy as LBS
@@ -21,6 +23,9 @@ import Network.HTTP.Hreq.Config
 
 newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }
   deriving (Functor, Applicative, Monad, MonadReader HttpConfig, MonadTrans, MonadIO)
+
+instance MonadUnliftIO m => MonadUnliftIO (Hreq m) where
+  withRunInIO = wrappedWithRunInIO Hreq runHreq'
 
 instance RunHttp (Hreq IO) where
   runHttp req = do
@@ -45,8 +50,6 @@ instance RunHttp (Hreq IO) where
     pure $ if code >= statusLower statusRange && code <= statusUpper statusRange
       then Just $ FailureResponse req response
       else Nothing
-
--- TODO: MonadUnliftIO or MonadBaseControl instances
 
 runHreq :: MonadIO m => BaseUrl -> Hreq m a -> m a
 runHreq baseUrl action = do

@@ -27,7 +27,6 @@ instance (SingI content) => SingI ('Req content :: Api Type) where
   sing = SReq sing
 
 -- | API Type combinators
-
 infixr 7 :>
 
 data (a :: k1) :> (b :: k2)

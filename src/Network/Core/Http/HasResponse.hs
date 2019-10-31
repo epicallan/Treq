@@ -8,6 +8,7 @@ import Control.Monad.Except
 import GHC.TypeLits
 import Data.Proxy
 import Network.HTTP.Types (hContentType)
+import Data.ByteString.Lazy as LBS
 import Network.HTTP.Media (parseAccept, (//), matches)
 
 import Network.Core.API
@@ -35,7 +36,7 @@ instance (MonadError HttpError m) => HasResponse '[] m where
 
   httpRes _ _ = return ()
 
-instance {-# OVERLAPPING #-} MonadError HttpError m
+instance {-# OVERLAPPING #-} (MonadError HttpError m)
   => HasResponse '[ 'Raw a ] m where
   type HttpOutput '[ 'Raw a ] = Response
 
@@ -97,7 +98,7 @@ decodeAsBody _ response = do
   unless (responseContentType `matches` accept)
     . throwError $ UnsupportedContentType accept response
 
-  case decode ctypProxy (resBody response) of
+  case decode ctypProxy (LBS.toStrict $ resBody response) of
      Left err -> throwError $ DecodeFailure (unDecodeError err) response
      Right val -> pure val
   where

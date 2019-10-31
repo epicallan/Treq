@@ -43,7 +43,5 @@ successSpec = do
 
     it "works with JSON responses" $ do
        let x = hreq @(GetJson TestUser) Empty
-           res  = case runHttpPure @'Default  baseUrl x of
-                     RunHttp _ y -> y
-                     Throw e     -> error (show e)
+           RunHttp _ res = runHttpPure @'Default baseUrl x
        res `shouldBe` testUser

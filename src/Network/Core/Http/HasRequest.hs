@@ -74,7 +74,7 @@ encodeHlistAsReq xs input req = case (xs, input) of
     req
 
   (SCons (SPath _ spath) sxs, ys) ->
-    let path = withKnownSymbol spath (symbolVal spath)
+    let path = withKnownSymbol spath (cs . symbolVal $ spath)
         req' = appendToPath path req
     in encodeHlistAsReq sxs ys req'
 

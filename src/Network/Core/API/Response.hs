@@ -4,12 +4,10 @@ import Data.Kind (Type)
 import Data.Singletons
 import GHC.TypeLits
 
--- TODO: Maybe add a cookie specific Type
 data ResContent a =
     ResBody a a
   | ResHeaders [(Symbol, a)]
-  | Raw a -- ^ TODO: treat a as a Reponse body type parameter
-          -- Such that one can get lazy or strict ByteString
+  | Raw a
 
 type ResBody = 'ResBody
 type ResHeaders = 'ResHeaders

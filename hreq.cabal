@@ -1,8 +1,8 @@
 cabal-version: >= 2.0
 name:           hreq
 version:        0.0.1.0
-synopsis:       A Type dependent Highlevel HTTP client request library.
-description:    A Type dependent highlevel HTTP request library inspired by servant-client.
+synopsis:       A Type dependent Highlevel HTTP client library.
+description:    A Type dependent highlevel HTTP client library inspired by servant-client.
 category:       Network, Web
 homepage:       https://github.com/epicallan/hreq.git#readme
 bug-reports:    https://github.com/epicallan/hreq.git/issues

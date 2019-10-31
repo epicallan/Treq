@@ -1,4 +1,3 @@
-{-# LANGUAGE InstanceSigs  #-}
 {-# LANGUAGE TupleSections #-}
 module Network.HTTP.Hreq.Internal where
 

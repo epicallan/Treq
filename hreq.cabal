@@ -33,7 +33,7 @@ library
     , Network.Core.API.Request
     , Network.Core.API.Response
     , Network.Core.API.TypeLevel
-    , Network.Core.API.Verbs
+    , Network.Core.API.Verb
     , Network.Core.Http.BaseUrl
     , Network.Core.Http.BasicAuth
     , Network.Core.Http.HasHttp

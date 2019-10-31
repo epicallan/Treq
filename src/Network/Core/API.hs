@@ -13,7 +13,7 @@ module Network.Core.API
       -- * TypeLevel
     , module Network.Core.API.TypeLevel
       -- * Verb
-    , module Network.Core.API.Verbs
+    , module Network.Core.API.Verb
       -- * API Type Synonyms
     , module Network.Core.API
       -- * Re-exports
@@ -27,7 +27,7 @@ import Network.Core.API.MediaType
 import Network.Core.API.Request
 import Network.Core.API.Response
 import Network.Core.API.TypeLevel
-import Network.Core.API.Verbs
+import Network.Core.API.Verb
 import Network.HTTP.Types (Header, HeaderName, Status (..))
 
 type StatusCode = Int

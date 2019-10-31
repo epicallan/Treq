@@ -12,7 +12,7 @@ import Network.Core.API.Request (ReqContent(..))
 import Network.Core.API.Response (ResContent (..))
 import Network.Core.API.Internal ((:>))
 import Network.Core.API.MediaType (MediaDecode, MediaEncode, HasMediaType)
-import Network.Core.API.Verbs (Verb)
+import Network.Core.API.Verb (Verb)
 
 -- | 'ApiToReq' transforms an API type into a type level list of
 -- Request component content types.

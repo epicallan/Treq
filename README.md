@@ -24,15 +24,16 @@ Summary key points
 
  - In Hreq, API types are used directly within API functions via Type Application while in servant-client API types create new API functions for creating API requests.
 
- - In Servant-client valid responses must have a status code between 200 and 300. 
+ - In Servant-client valid responses must have a status code between 200 and 300.
    In Hreq one can configure a range for valid status codes via the HTTP config with 200 to 300 as the default.
- 
+
  - In Hreq, API Request component arguments are provided to the API function through a Heterogeneous list.
 
 ## Usage Example
 
 
 ```haskell
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE TypeOperators #-}
@@ -85,4 +86,3 @@ This README is tested by `markdown-unlit` to make sure the code builds. To keep 
 main :: IO ()
 main = pure ()
 ```
-

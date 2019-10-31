@@ -1,5 +1,6 @@
+-- | This module provides a Heterogeneous list used to represent HTTP request inputs and outputs
+-- for some API type definitions
 module Network.Core.Http.Hlist where
-
 
 import Data.Kind (Type)
 

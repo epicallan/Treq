@@ -1,3 +1,5 @@
+-- | This module provides 'HttpError' constructors and type.
+--
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Network.Core.Http.HttpError where
 
@@ -11,6 +13,7 @@ import Network.Core.Http.Request
 import Network.Core.Http.Response
 
 -- | A type representing possible errors in a request
+-- This type and the Eq instance is largely borrowed from servant-client
 --
 data HttpError =
   -- | The server returned an error response including the
@@ -37,6 +40,4 @@ instance Eq HttpError where
       -- returns true, if type of exception is the same
       eqSomeException (SomeException a) (SomeException b) = typeOf a == typeOf b
 
-
 instance Exception HttpError
-

@@ -1,6 +1,7 @@
+-- | Interprets a 'ReqContent' type level list into a 'Request'
+--
 {-# LANGUAGE PatternSynonyms      #-}
 {-# LANGUAGE TypeApplications     #-}
-{-# LANGUAGE TypeInType #-}
 module Network.Core.Http.HasRequest where
 
 import Prelude ()
@@ -23,8 +24,13 @@ import Network.HTTP.Types (QueryItem)
 pattern Empty :: Hlist '[]
 pattern Empty = Nil
 
--- | We need the verb api component 'Verb' so as to access
--- Request method and content-type value
+-- | 'HasRequest' is used to create a Request from a 'ReqContent' type level list
+-- and a 'Verb'.
+--
+-- @verb@ is requited for obtaining Request method and 'MediaType' value
+--
+-- @reqComponents@ is a usually a 'ReqContent Type' type level list.
+-- It can be something else.
 class HasRequest (reqComponents :: k) (verb :: Type) where
    type HttpInput reqComponents :: Type
 
@@ -116,7 +122,7 @@ encodeHlistAsReq xs input req = case (xs, input) of
        $ appendQueryFlags (toQueryFlags sflags) req
 
   (SCons (SReqBody sctyp _sa) sxs, y :. ys)                    ->
-     let req' = setReqBody (encode sctyp y) (mediaType sctyp) req
+     let req' = setReqBody (mediaEncode sctyp y) (mediaType sctyp) req
      in encodeHlistAsReq sxs ys req'
 
 

@@ -1,10 +1,13 @@
+-- | Specification for valid Request component types used at the Kind and Type level for
+-- creating an API structure.
+--
 module Network.Core.API.Request where
 
 import Data.Kind (Type)
-import Data.Singletons
-import GHC.TypeLits
+import Data.Singletons (Sing, SingI(..))
+import GHC.TypeLits (Symbol)
 
-
+-- * Request Type
 data ReqContent a =
       Path a Symbol
     | Params [(Symbol, a)]
@@ -15,6 +18,7 @@ data ReqContent a =
     | ReqBody a a
     | ReqHeaders [(Symbol, a)]
 
+-- * Request Type Synonyms
 type Captures = 'Captures
 type QueryFlags = 'QueryFlags ()
 type Params = 'Params
@@ -22,15 +26,12 @@ type ReqBody = 'ReqBody
 type ReqHeaders = 'ReqHeaders
 type CaptureAll = 'CaptureAll
 type BasicAuth = 'BasicAuth ()
-
 type Path = 'Path ()
-
 type QueryFlag (s :: Symbol) = QueryFlags '[ s ]
-
 type Param s t = Params '[ '( s,  t ) ]
-
 type Capture s t = Captures '[ '( s, t) ]
 
+-- * Request as a Singleton GADT
 data SReqContent (a :: ReqContent Type)
   = forall t s . a ~ 'Path t s => SPath (Sing t) (Sing s)
   | forall ts (b :: Type) . a ~ 'QueryFlags b ts => SQueryFlags (Sing b) (Sing ts)
@@ -43,6 +44,7 @@ data SReqContent (a :: ReqContent Type)
 
 type instance Sing = SReqContent
 
+-- * SingI instances for Request
 instance (SingI a, SingI s) => SingI ('BasicAuth a s :: ReqContent Type) where
   sing = SBasicAuth sing sing
 

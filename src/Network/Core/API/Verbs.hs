@@ -1,4 +1,11 @@
-module Network.Core.API.Verbs  where
+-- | Module for working with HTTP methods and the resulting content from
+-- using them at the type level.
+module Network.Core.API.Verbs
+  ( module Network.Core.API.Verbs
+    -- * Re-exports
+  , StdMethod (..)
+  , Method
+  ) where
 
 import Data.Proxy (Proxy)
 import Data.Typeable (Typeable)
@@ -7,24 +14,30 @@ import Network.HTTP.Types.Method (Method, StdMethod (..), methodConnect, methodD
                                   methodHead, methodOptions, methodPatch, methodPost, methodPut,
                                   methodTrace)
 
-data Verb (method :: StdMethod) (contents:: [k])
+-- | @Verb@ is a type for representing the results of an HTTP client
+-- request call represented as content list and the HTTP method they are
+-- associated with. Type synonyms for common verbs are provided but you
+-- free to define your own
+data Verb (method :: k1) (contents:: [k2])
   deriving (Typeable, Generic)
 
 type GET = 'GET
-type Get ts = Verb GET ts
+type Get = Verb GET
 
 type POST = 'POST
-type Post ts  = Verb 'POST  ts
+type Post = Verb 'POST
 
 type PUT = 'PUT
-type Put ts  = Verb PUT ts
+type Put = Verb PUT
 
 type DELETE = 'DELETE
-type Delete ts = Verb 'DELETE ts
+type Delete = Verb 'DELETE
 
 type PATCH = 'PATCH
-type Patch ts = Verb 'PATCH  ts
+type Patch = Verb 'PATCH
 
+-- | @ReflectMethod@ class provides us with a way to obtain the 'Method' data
+-- associated with a promoted HTTP Verb.
 class ReflectMethod a where
     reflectMethod :: Proxy a -> Method
 

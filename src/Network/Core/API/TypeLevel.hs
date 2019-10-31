@@ -1,23 +1,36 @@
+-- | Type level functions over 'ReqContent' and 'ResContent'
+--
 module Network.Core.API.TypeLevel where
 
-import Data.Kind
-import GHC.TypeLits
-import Network.Core.API.Internal
-import Network.Core.API.MediaType
+import Data.Kind (Type, Constraint)
+import GHC.TypeLits (Symbol, TypeError, ErrorMessage(..), KnownSymbol)
 import Network.HTTP.Types (Header)
 import Web.HttpApiData (ToHttpApiData)
-import Network.Core.Http.BasicAuth (BasicAuthData)
-import Network.Core.API.Verbs
 
-type family ApiToReq (a :: k) :: [ ReqContent Type]  where
+import Network.Core.Http.BasicAuth (BasicAuthData)
+import Network.Core.API.Request (ReqContent(..))
+import Network.Core.API.Response (ResContent (..))
+import Network.Core.API.Internal ((:>))
+import Network.Core.API.MediaType (MediaDecode, MediaEncode, HasMediaType)
+import Network.Core.API.Verbs (Verb)
+
+-- | 'ApiToReq' transforms an API type into a type level list of
+-- Request component content types.
+-- The resulting list is used by the 'HasRequest' class.
+type family ApiToReq (a :: api) :: [ ReqContent Type]  where
   ApiToReq (Verb m ts) =  '[ ]
   ApiToReq ( (path :: Symbol) :> ts) = 'Path () path ': ApiToReq ts
   ApiToReq ( (x :: ReqContent Type) :> ts) = x ': ApiToReq ts
 
-type family GetVerb (a :: k) :: Type  where
+-- | Given an API type, 'GetVerb' retrieves the Verb type component which
+-- is used by the 'HasResponse' class.
+type family GetVerb (a :: api) :: Type  where
   GetVerb (Verb m ts) =  Verb m ts
   GetVerb (api :> sub) = GetVerb sub
 
+-- | 'HttpReq' interprets a 'ReqContent' list as a 'Type' level list for
+-- use in an heterogeneous list used in the 'HasRequest' class for representing
+-- request function input
 type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq '[] = '[]
 
@@ -40,6 +53,9 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq ('ReqHeaders ( '(s, a) ': hs ) ': ts) = a ': HttpReq ('ReqHeaders hs ': ts)
   HttpReq ('ReqHeaders '[] : ts) = HttpReq ts
 
+-- | 'HttpRes' interprets a 'ResContent' list as a Type level list for
+-- use in an heterogeneous list used for representing response result in the
+-- 'HasResponse' class.
 type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
   HttpRes '[] = '[]
   HttpRes ('ResBody ctyp a ': ts) = a ': HttpRes ts
@@ -47,6 +63,7 @@ type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
   HttpRes ('ResHeaders '[]  ': ts) = HttpRes ts
   HttpRes ('Raw a ': ts) = HttpRes ts
 
+-- | Response content types Constraints.
 type family HttpResConstraints (res :: [ResContent Type]) :: Constraint where
   HttpResConstraints '[] = ()
   HttpResConstraints  ('ResBody ctyp a ': ts) =
@@ -54,6 +71,7 @@ type family HttpResConstraints (res :: [ResContent Type]) :: Constraint where
   HttpResConstraints ('ResHeaders hs ': ts) = (HttpSymbolTypePair hs, HttpResConstraints ts)
   HttpResConstraints ('Raw a ': ts) = HttpResConstraints ts
 
+-- | Request content types Constraints.
 type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
   HttpReqConstraints '[] = ()
 
@@ -80,7 +98,7 @@ type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
      (KnownSymbol s, ToHttpApiData a, HttpReqConstraints ('ReqHeaders hs ': ts))
   HttpReqConstraints ('ReqHeaders '[] ': ts) = HttpReqConstraints ts
 
-
+-- | For a given HTTP API data 'Symbol' 'Type' tuple list generate Constraints for all the members.
 type family HttpSymbolTypePair (ts :: [(Symbol, Type)]) :: Constraint where
   HttpSymbolTypePair ts =  (All KnownSymbol (AllFsts ts), All ToHttpApiData (AllSnds ts))
 

@@ -10,7 +10,7 @@
     when you are using only a small portion of it.
     It is also not backward compatible with previous GHC releases.
     So if you want to support earlier GHC releases in a library that depends on singletons,
-    you are pretty much left to the mercy of CPP hacks and careful Cabal dependency configurations. 
+    you are pretty much left to the mercy of CPP hacks and careful Cabal dependency configurations.
 
     ===Attribution
     Some of the code in this module was directly borrowed from the Singletons library

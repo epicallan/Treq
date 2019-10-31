@@ -5,6 +5,7 @@ import Network.Core.Http.HttpError
 import Network.Core.Http.Request
 import Network.Core.Http.Response
 
+-- | Provides the capability to run a request and get a response.
 class Monad m => RunHttp m where
   runHttp :: Request -> m Response
 
@@ -23,16 +24,16 @@ instance Monad (HttpPure state)  where
 
   m >>= f = case m of
     RunHttp r x -> setHttpRequest r $ f x
-    Throw e        -> Throw e
+    Throw e     -> Throw e
 
 instance Applicative (HttpPure state) where
   pure = RunHttp defaultRequest
 
   f <*> x = case x of
-    Throw e        -> Throw e
+    Throw e     -> Throw e
     RunHttp r y -> setHttpRequest r $ fmap ( $ y) f
 
 setHttpRequest :: Request -> HttpPure state a -> HttpPure state a
 setHttpRequest r h = case h of
   RunHttp _ rs -> RunHttp r rs
-  Throw e         -> Throw e
+  Throw e      -> Throw e

@@ -1,13 +1,25 @@
+-- | This module re-exports data types and functionality required
+-- in creation of Request and Response objects for an HTTP client.
 module Network.Core.Http
-  ( module Network.Core.Http.BaseUrl
+  ( -- * BaseUrl
+    module Network.Core.Http.BaseUrl
+    -- * Request
   , module Network.Core.Http.Request
+    -- * Response
   , module Network.Core.Http.Response
+    -- * Hlist
   , module Network.Core.Http.Hlist
+    -- * HasRequest
   , module Network.Core.Http.HasRequest
+    -- * HasResponse
   , module Network.Core.Http.HasResponse
+    -- * RunHttp
   , module Network.Core.Http.RunHttp
+    -- * HttpError
   , module Network.Core.Http.HttpError
+    -- * HasHttp
   , module Network.Core.Http.HasHttp
+    -- * BasicAuth
   , module Network.Core.Http.BasicAuth
   ) where
 

@@ -1,4 +1,13 @@
-module Network.HTTP.Hreq.Config where
+-- | 'HttpConfig' is used in the 'Hreq' Monad for HTTP client configuration
+--
+module Network.HTTP.Hreq.Config
+  ( -- * HttpConfig
+    HttpConfig (..)
+    -- * Status Range
+  , StatusRange (..)
+    -- * Helper function
+  , createDefConfig
+  ) where
 
 import Control.Concurrent.STM.TVar (TVar)
 import qualified Network.HTTP.Client as C
@@ -20,6 +29,7 @@ data HttpConfig = HttpConfig
   , httpManager   :: C.Manager
   }
 
+-- | Function for creating a default 'HttpConfig'
 createDefConfig :: BaseUrl -> IO HttpConfig
 createDefConfig baseUrl@(BaseUrl scheme _ _ _) =
   HttpConfig baseUrl (StatusRange 200 300) Nothing <$> manager

@@ -28,7 +28,7 @@ successSpec = do
       let x = hreq @(JsonBody TestUser :> RawResponse GET) (testUser :. Empty)
           RunHttp req _ = runHttpPure' baseUrl x
           Just (body, _ )  = reqBody req
-      body `shouldBe` encode (Proxy @JSON) testUser
+      body `shouldBe` mediaEncode (Proxy @JSON) testUser
 
     it "works with capture" $ do
       let x = hreq @(Capture "name" String :> RawResponse GET) ("allan" :. Empty)

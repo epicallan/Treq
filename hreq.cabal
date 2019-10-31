@@ -1,13 +1,14 @@
 cabal-version: >= 2.0
 name:           hreq
-version:        0.0.0.1
-synopsis:       A type dependent highlevel http request library inspired by servant-client.
-description:    A type dependent highlevel http request library inspired by servant-client.
+version:        0.0.1.0
+synopsis:       A Type dependent Highlevel HTTP client request library.
+description:    A Type dependent highlevel HTTP request library inspired by servant-client.
 category:       Network, Web
 homepage:       https://github.com/epicallan/hreq.git#readme
 bug-reports:    https://github.com/epicallan/hreq.git/issues
 author:         Lukwago Allan <epicallan.al@gmail>
 maintainer:     Lukwago Allan <epicallan.al@gmail>
+copyright:      2019 Lukwago Allan
 license:        MIT
 license-file:   LICENSE.md
 extra-doc-files: CHANGELOG.md, README.md
@@ -16,7 +17,7 @@ tested-with:
     ||  ==8.4.4
     ||  ==8.6.5
     ||  ==8.8.1
-build-type:     Simple
+build-type: Simple
 
 source-repository head
   type: git
@@ -24,11 +25,9 @@ source-repository head
 
 library
   exposed-modules:
-      Network.Core.Http
+      Network.HTTP.Hreq
+    , Network.Core.Http
     , Network.Core.API
-    , Network.HTTP.Hreq
-  other-modules:
-      Data.Singletons
     , Network.Core.API.Internal
     , Network.Core.API.MediaType
     , Network.Core.API.Request
@@ -47,6 +46,7 @@ library
     , Network.Core.Http.RunHttp
     , Network.HTTP.Hreq.Config
     , Network.HTTP.Hreq.Internal
+    , Data.Singletons
 
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData
   build-depends:
@@ -113,6 +113,7 @@ test-suite spec
   hs-source-dirs:      test
   type:                exitcode-stdio-1.0
   ghc-options:         -Wall
+  default-language:    Haskell2010
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData
   other-modules:
       Hreq.FailSpec
@@ -120,4 +121,3 @@ test-suite spec
     , Hreq.Util
   build-tool-depends:
     hspec-discover:hspec-discover >= 2.6.0 && <2.8
-  default-language:    Haskell2010

@@ -1,13 +1,17 @@
 {-# LANGUAGE TupleSections #-}
-module Network.HTTP.Hreq.Internal where
+module Network.HTTP.Hreq.Internal
+  ( Hreq (..)
+  , runHreq
+  , runHreqWithConfig
+  ) where
 
 import Prelude ()
 import Prelude.Compat
 
-import Control.Concurrent.STM.TVar
+import Control.Concurrent.STM.TVar (TVar, modifyTVar', readTVar, writeTVar)
 import Control.Monad.Catch (SomeException (..), catch, throwM)
 import Control.Monad.IO.Unlift (MonadUnliftIO (..), wrappedWithRunInIO)
-import Control.Monad.Reader
+import Control.Monad.Reader (MonadIO (..), MonadReader, MonadTrans, ReaderT (..), ask, asks)
 import Control.Monad.STM (STM, atomically)
 import qualified Data.ByteString.Lazy as LBS
 import Data.Maybe (maybeToList)
@@ -20,6 +24,7 @@ import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCod
 import Network.Core.Http
 import Network.HTTP.Hreq.Config
 
+-- | Monad for running Http client requests
 newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }
   deriving (Functor, Applicative, Monad, MonadReader HttpConfig, MonadTrans, MonadIO)
 
@@ -79,6 +84,7 @@ performHttpRequest request manager mcookieJar = case mcookieJar of
         writeTVar cj newCookieJar
         pure newReq
 
+    -- updateWithResponseCookies code is borrowed from servant-client
     updateWithResponseCookies
       :: TVar HTTP.CookieJar
       -> HTTP.HistoriedResponse HTTP.BodyReader

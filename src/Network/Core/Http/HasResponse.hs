@@ -8,7 +8,8 @@ import Control.Monad.Except
 import GHC.TypeLits
 import Data.Proxy
 import Network.HTTP.Types (hContentType)
-import Data.ByteString.Lazy as LBS
+import qualified Data.ByteString.Lazy as LBS
+import qualified Data.List.NonEmpty as NE
 
 import Network.Core.API
 import Network.Core.Http.Hlist
@@ -94,8 +95,8 @@ decodeAsBody
 decodeAsBody _ response = do
   responseContentType <- checkContentType
 
-  unless (responseContentType `matches` accept)
-    . throwError $ UnsupportedContentType accept response
+  unless (any (responseContentType `matches`) accepts)
+    . throwError $ UnsupportedContentType (NE.head accepts) response
 
   case mediaDecode ctypProxy (LBS.toStrict $ resBody response) of
      Left err -> throwError $ DecodeFailure (unDecodeError err) response
@@ -104,8 +105,8 @@ decodeAsBody _ response = do
     ctypProxy :: Proxy ctyp
     ctypProxy = Proxy
 
-    accept :: MediaType
-    accept = mediaType ctypProxy
+    accepts :: NE.NonEmpty MediaType
+    accepts = mediaTypes ctypProxy
 
     checkContentType :: m MediaType
     checkContentType  = case lookup hContentType $ resHeaders response of

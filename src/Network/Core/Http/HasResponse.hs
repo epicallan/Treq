@@ -1,18 +1,17 @@
 {-# LANGUAGE TypeApplications #-}
-{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Network.Core.Http.HasResponse where
 
-import Data.Kind
-import Data.Singletons
 import Control.Monad.Except
-import GHC.TypeLits
+import Data.Kind
+import Data.Hlist
 import Data.Proxy
-import Network.HTTP.Types (hContentType)
+import Data.Singletons
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.List.NonEmpty as NE
+import GHC.TypeLits
+import Network.HTTP.Types (hContentType)
 
 import Network.Core.API
-import Network.Core.Http.Hlist
 import Network.Core.Http.HttpError
 import Network.Core.Http.Response
 

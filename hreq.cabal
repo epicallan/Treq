@@ -39,13 +39,13 @@ library
     , Network.Core.Http.HasHttp
     , Network.Core.Http.HasRequest
     , Network.Core.Http.HasResponse
-    , Network.Core.Http.Hlist
     , Network.Core.Http.HttpError
     , Network.Core.Http.Request
     , Network.Core.Http.Response
     , Network.Core.Http.RunHttp
     , Network.HTTP.Hreq.Config
     , Network.HTTP.Hreq.Internal
+    , Data.Hlist
     , Data.Singletons
 
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData

@@ -7,8 +7,6 @@ module Network.Core.Http
   , module Network.Core.Http.Request
     -- * Response
   , module Network.Core.Http.Response
-    -- * Hlist
-  , module Network.Core.Http.Hlist
     -- * HasRequest
   , module Network.Core.Http.HasRequest
     -- * HasResponse
@@ -21,6 +19,8 @@ module Network.Core.Http
   , module Network.Core.Http.HasHttp
     -- * BasicAuth
   , module Network.Core.Http.BasicAuth
+      -- * Hlist
+  , module Data.Hlist
   ) where
 
 import Network.Core.Http.BaseUrl
@@ -28,7 +28,7 @@ import Network.Core.Http.BasicAuth
 import Network.Core.Http.HasHttp
 import Network.Core.Http.HasRequest
 import Network.Core.Http.HasResponse
-import Network.Core.Http.Hlist
+import Data.Hlist
 import Network.Core.Http.HttpError
 import Network.Core.Http.Request
 import Network.Core.Http.Response

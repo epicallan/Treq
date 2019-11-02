@@ -8,6 +8,7 @@ import Prelude ()
 import Prelude.Compat
 
 import Data.Kind
+import Data.Hlist
 import Data.Proxy
 import Data.Singletons
 import GHC.TypeLits
@@ -16,7 +17,6 @@ import Data.String.Conversions (cs)
 import Web.HttpApiData (ToHttpApiData (..))
 
 import Network.Core.API
-import Network.Core.Http.Hlist
 import Network.Core.Http.Request
 import Network.Core.Http.BasicAuth
 import Network.HTTP.Types (QueryItem)

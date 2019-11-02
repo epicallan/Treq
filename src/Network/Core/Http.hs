@@ -23,12 +23,13 @@ module Network.Core.Http
   , module Data.Hlist
   ) where
 
+import Data.Hlist
+
 import Network.Core.Http.BaseUrl
 import Network.Core.Http.BasicAuth
 import Network.Core.Http.HasHttp
 import Network.Core.Http.HasRequest
 import Network.Core.Http.HasResponse
-import Data.Hlist
 import Network.Core.Http.HttpError
 import Network.Core.Http.Request
 import Network.Core.Http.Response

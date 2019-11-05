@@ -14,7 +14,8 @@ Hreq is a high-level easy to use type-driven HTTP client library inspired by Ser
 
 ##  Motivation
 
-Hreq was motivated by the simplicity and ease of use of [req](https://github.com/mrkkrp/req) coupled with the type driven elegance of [servant-client](https://github.com/haskell-servant/servant/tree/master/servant-client). I envisioned Hreq as the best possible compromise of both worlds.
+Hreq was motivated by the simplicity and ease of use of [req](https://github.com/mrkkrp/req) and the type driven elegance of [servant-client](https://github.com/haskell-servant/servant/tree/master/servant-client). 
+I envisioned Hreq as the best possible compromise of both worlds.
 
 ### Some of the Key Points
 

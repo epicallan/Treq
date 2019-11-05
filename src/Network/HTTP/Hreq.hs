@@ -16,7 +16,7 @@
 -- > main :: IO ()
 -- > main = do
 -- >  res <- runHreq baseUrl $ do
--- >    requestedUser <-  hreq @(Capture "age" Int :> GetJson User) (25 :. Empty)
+-- >    requestedUser <-  hreq @(Capture Int :> GetJson User) (25 :. Empty)
 -- >    createdUser   <-  hreq @(JsonBody User :> PostJson User) (user :. Empty)
 -- >    return (requestedUser, createdUser)
 -- >  print res

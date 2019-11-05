@@ -103,7 +103,7 @@ encodeHlistAsReq xs input req = case (xs, input) of
   (SCons (SCaptures SNil) sxs, ys)                             ->
     encodeHlistAsReq sxs ys req
 
-  (SCons (SCaptures (SCons (STuple2 _s _x) zs)) sxs, y :. ys)  ->
+  (SCons (SCaptures (SCons _z zs)) sxs, y :. ys)  ->
     let req' = appendToPath (cs $ toUrlPiece y) req
     in encodeHlistAsReq (SCons (SCaptures zs) sxs) ys req'
 

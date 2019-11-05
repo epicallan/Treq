@@ -6,26 +6,23 @@
 
 ## Intro
 
-Hreq is a high-level HTTP client library inspired by servant-client providing an alternative approach to type-safe construction and interpretation of API endpoints.
+Hreq is a high-level easy to use type-driven HTTP client library inspired by Servant-Client. Hreq provides an alternative approach to type-safe construction and interpretation of API endpoints for Http client requests.
 
-Hreq's API route is more Kind restricted, enabling more type correctness and more straightforward formulation of type-level functions.
+### Checkout accompanying blog post for more details
+
+* [HTTP Requests with Hreq](https://lukwagoallan.com/posts/http-requests-with-hreq)
 
 ##  Motivation
 
-TODO: Write a detailed comparison between servant-client and Hreq (elaborate on the pros and cons)
+Hreq was motivated by the simplicity and ease of use of [req](https://github.com/mrkkrp/req) coupled with the type driven elegance of [servant-client](https://github.com/haskell-servant/servant/tree/master/servant-client). I envisioned Hreq as the best possible compromise of both worlds.
 
-Summary key points
------------------
- - A default HTTP client manager is set up within the library such that one doesn't have to think about manager configuration. This is in stark contrast with Servant-Client where you have to provide one. It's also possible to over-ride the provided default manager
+### Some of the Key Points
 
- - Hreq provides type synonyms for common API type combinators therefore reducing on API types verbosity.
+ - A default HTTP client manager is set up within the library such that one doesn't have to think about manager configuration.
 
- - Due to the Kind, restrictive nature of the API type specification; a wide range of invalid type errors are eliminated, making incorrect states un-representable at the type level.
+ - Hreq provides type synonyms for common API type combinators, therefore, reducing on API types verbosity.
 
  - In Hreq, API types are used directly within API functions via Type Application while in servant-client API types create new API functions for creating API requests.
-
- - In Servant-client valid responses must have a status code between 200 and 300.
-   In Hreq one can configure a range for valid status codes via the HTTP config with 200 to 300 as the default.
 
  - In Hreq, API Request component arguments are provided to the API function through a Heterogeneous list.
 
@@ -70,7 +67,7 @@ createUser :: RunHttp m => User -> m User
 createUser user = hreq @(JsonBody User :> PostJson User) (user :. Empty)
 
 getUserByName :: RunHttp m => String -> m User
-getUserByName userName = hreq @(Capture "name" String :> GetJson User) (userName  :. Empty)
+getUserByName userName = hreq @(Capture String :> GetJson User) (userName :. Empty)
 
 ```
 

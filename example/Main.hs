@@ -40,7 +40,7 @@ singleParam :: RunHttp m => m Value
 singleParam = hreq @(Param "age" Int :> GetJson Value) $ singleton 10
 
 singleCapture :: RunHttp m => m Value
-singleCapture = hreq @(Capture "age" Int :> GetJson Value) (25 :. Empty)
+singleCapture = hreq @(Capture Int :> GetJson Value) (25 :. Empty)
 
 singleReqJsonBody :: RunHttp m => m User
 singleReqJsonBody = hreq @(JsonBody User :> PostJson User) (user :. Empty)

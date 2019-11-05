@@ -47,7 +47,7 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
 
   HttpReq ('CaptureAll a ': ts) = [a] ': HttpReq ts
 
-  HttpReq ('Captures ( '(s, a) ': cs ) ': ts) = a ': HttpReq ('Captures cs ': ts)
+  HttpReq ('Captures ( a : cs ) ': ts) = a ': HttpReq ('Captures cs ': ts)
   HttpReq ('Captures '[] : ts) = HttpReq ts
 
   HttpReq ('ReqHeaders ( '(s, a) ': hs ) ': ts) = a ': HttpReq ('ReqHeaders hs ': ts)
@@ -88,8 +88,8 @@ type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
     (KnownSymbol s, ToHttpApiData a,  HttpReqConstraints ('Params ps ': ts))
   HttpReqConstraints ('Params '[] ': ts) =  HttpReqConstraints ts
 
-  HttpReqConstraints ('Captures ( '(s, a) ': cs) ': ts) =
-    (KnownSymbol s, ToHttpApiData a,  HttpReqConstraints ('Captures cs ': ts))
+  HttpReqConstraints ('Captures ( a : cs) ': ts) =
+    (ToHttpApiData a,  HttpReqConstraints ('Captures cs ': ts))
   HttpReqConstraints ('Captures '[] ': ts) =  HttpReqConstraints ts
 
   HttpReqConstraints ('CaptureAll a ': ts) = (ToHttpApiData [a], HttpReqConstraints ts)

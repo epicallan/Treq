@@ -12,7 +12,7 @@ data ReqContent a =
       Path a Symbol
     | Params [(Symbol, a)]
     | QueryFlags a [Symbol]
-    | Captures [(Symbol, a)]
+    | Captures [a]
     | BasicAuth a Symbol
     | CaptureAll a
     | ReqBody a a
@@ -29,18 +29,18 @@ type BasicAuth = 'BasicAuth ()
 type Path = 'Path ()
 type QueryFlag (s :: Symbol) = QueryFlags '[ s ]
 type Param s t = Params '[ '( s,  t ) ]
-type Capture s t = Captures '[ '( s, t) ]
+type Capture t = Captures '[ t ]
 
 -- * Request as a Singleton GADT
 data SReqContent (a :: ReqContent Type)
   = forall t s . a ~ 'Path t s => SPath (Sing t) (Sing s)
   | forall ts (b :: Type) . a ~ 'QueryFlags b ts => SQueryFlags (Sing b) (Sing ts)
-  | forall ts . a ~ 'CaptureAll ts => SCaptureAll (Sing ts)
+  | forall b . a ~ 'CaptureAll b => SCaptureAll (Sing b)
   | forall ts . a ~ 'Captures ts => SCaptures (Sing ts)
   | forall ctyp b . a ~ 'ReqBody ctyp b => SReqBody (Sing ctyp) (Sing b)
   | forall ts . a ~ ReqHeaders ts => SReqHeaders (Sing ts)
   | forall ts . a ~ Params ts => SParams (Sing ts)
-  | forall t s . a ~ 'BasicAuth t s => SBasicAuth (Sing t) (Sing s)
+  | forall b s . a ~ 'BasicAuth b s => SBasicAuth (Sing b) (Sing s)
 
 type instance Sing = SReqContent
 

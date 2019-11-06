@@ -28,9 +28,9 @@ type family GetVerb (a :: api) :: Type  where
   GetVerb (Verb m ts) =  Verb m ts
   GetVerb (api :> sub) = GetVerb sub
 
--- | 'HttpReq' interprets a 'ReqContent' list as a 'Type' level list for
--- use in an heterogeneous list used in the 'HasRequest' class for representing
--- request function input
+-- | 'HttpReq' interprets a 'ReqContent' list as a 'Type' level list
+-- used in the 'Network.Core.Http.HasRequest' class for representing
+-- request component inputs
 type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq '[] = '[]
 
@@ -54,8 +54,7 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq ('ReqHeaders '[] : ts) = HttpReq ts
 
 -- | 'HttpRes' interprets a 'ResContent' list as a Type level list for
--- use in an heterogeneous list used for representing response result in the
--- 'HasResponse' class.
+-- used 'Network.Core.Http.HasResponse' class to represent responses
 type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
   HttpRes '[] = '[]
   HttpRes ('ResBody ctyp a ': ts) = a ': HttpRes ts
@@ -92,7 +91,7 @@ type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
     (ToHttpApiData a,  HttpReqConstraints ('Captures cs ': ts))
   HttpReqConstraints ('Captures '[] ': ts) =  HttpReqConstraints ts
 
-  HttpReqConstraints ('CaptureAll a ': ts) = (ToHttpApiData [a], HttpReqConstraints ts)
+  HttpReqConstraints ('CaptureAll a ': ts) = (ToHttpApiData a, HttpReqConstraints ts)
 
   HttpReqConstraints ('ReqHeaders ('(s, a) ': hs) ': ts) =
      (KnownSymbol s, ToHttpApiData a, HttpReqConstraints ('ReqHeaders hs ': ts))

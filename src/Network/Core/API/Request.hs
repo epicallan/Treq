@@ -44,7 +44,6 @@ data SReqContent (a :: ReqContent Type)
 
 type instance Sing = SReqContent
 
--- * SingI instances for Request
 instance (SingI a, SingI s) => SingI ('BasicAuth a s :: ReqContent Type) where
   sing = SBasicAuth sing sing
 

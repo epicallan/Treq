@@ -17,7 +17,7 @@ import Network.Core.Http.Response
 --
 data HttpError =
   -- | The server returned an error response including the
-  -- failing request. 'requestPath' includes the 'BaseUrl' and the
+  -- failing request. 'reqPath' includes the 'Network.Core.Http.BaseUrl.BaseUrl' and the
   -- path of the request.
     FailureResponse Request Response
   -- | The body could not be decoded at the expected type

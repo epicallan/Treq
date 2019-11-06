@@ -14,7 +14,7 @@ Hreq is a high-level easy to use type-driven HTTP client library inspired by Ser
 
 ##  Motivation
 
-Hreq was motivated by the simplicity and ease of use of [req](https://github.com/mrkkrp/req) and the type driven elegance of [servant-client](https://github.com/haskell-servant/servant/tree/master/servant-client). 
+Hreq was motivated by the simplicity and ease of use of [req](https://github.com/mrkkrp/req) and the type driven elegance of [servant-client](https://github.com/haskell-servant/servant/tree/master/servant-client).
 I envisioned Hreq as the best possible compromise of both worlds.
 
 ### Some of the Key Points
@@ -52,8 +52,14 @@ data User = User
 main' :: IO ()
 main' = do
   res <- runHreq baseUrl $ do
+    -- | Makes Post request with newUser as a request body
+
     createdUser <- createUser newUser
+
+    -- | Makes Get Request with "allan" as a URL fragment
     myUser      <- getUserByName "allan"
+
+    -- | makes a Ger Request returning a list of Users
     allUsers    <- hreq @(GetJson [User]) Empty
     return (createdUser, myUser, allUsers)
   print res
@@ -75,6 +81,7 @@ getUserByName userName = hreq @(Capture String :> GetJson User) (userName :. Emp
 ### Attribution
 
 Hreq is heavily inspired by [servant-client](https://github.com/haskell-servant/servant) and ideas from [Serv](https://github.com/tel/serv).
+
 
 ### Documentation
 

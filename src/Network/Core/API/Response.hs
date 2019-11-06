@@ -25,7 +25,6 @@ data SResContent (a :: ResContent Type) where
   SRaw :: forall (a :: Type) . Sing a -> SResContent ('Raw a)
 type instance Sing = SResContent
 
--- * SingI instances
 instance (SingI ctyp, SingI a) => SingI ('ResBody ctyp a :: ResContent Type) where
   sing = SResBody sing sing
 

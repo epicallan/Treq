@@ -17,11 +17,17 @@ tested-with:
     ||  ==8.4.4
     ||  ==8.6.5
     ||  ==8.8.1
-build-type: Simple
+build-type: Custom
 
 source-repository head
   type: git
   location: https://github.com/epicallan/hreq.git
+
+custom-setup
+ setup-depends:
+   base >= 4 && <5,
+   Cabal,
+   cabal-doctest >= 1 && <1.1
 
 library
   exposed-modules:
@@ -54,6 +60,7 @@ library
     base-compat          >= 0.10.5 && < 0.13,
     aeson                >= 1.4.5 && < 1.5,
     bytestring           >= 0.10.8 && < 0.11,
+    containers           >= 0.5.7.1 && < 0.7,
     exceptions           >= 0.10.0 && < 0.11,
     http-api-data        >= 0.4.1 && < 0.5,
     http-client          >= 0.6.4 && < 0.7,
@@ -97,7 +104,7 @@ test-suite readme
     , hreq
   main-is:             README.lhs
   type:                exitcode-stdio-1.0
-  ghc-options:         -pgmL markdown-unlit -Wall
+  ghc-options:         -pgmL markdown-unlit -Wall -threaded
   build-tool-depends:  markdown-unlit:markdown-unlit
   default-language:    Haskell2010
 
@@ -106,18 +113,32 @@ test-suite spec
   build-depends:
       base       >= 4.10.1 && < 5
     , aeson      >= 1.4.5  && < 1.5
+    , containers >= 0.5.7.1 && < 0.7
     , http-types >= 0.12.3 && < 0.13
     , hspec      >= 2.6.0  && < 2.8
     , hreq
   main-is:             Spec.hs
   hs-source-dirs:      test
   type:                exitcode-stdio-1.0
-  ghc-options:         -Wall
+  ghc-options:         -Wall -threaded
   default-language:    Haskell2010
-  default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData
+  default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns StrictData
   other-modules:
       Hreq.FailSpec
     , Hreq.SuccessSpec
     , Hreq.Util
   build-tool-depends:
     hspec-discover:hspec-discover >= 2.6.0 && <2.8
+
+test-suite doctests
+  type:             exitcode-stdio-1.0
+  main-is:          doc-tests.hs
+  build-depends:
+      base       >= 4.10.1 && < 5
+    , doctest    >=0.15 && < 0.17
+    , hreq
+
+  ghc-options:      -Wall -threaded
+  default-extensions: DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses TypeApplications TypeFamilies OverloadedStrings GADTs ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures
+  hs-source-dirs:   test
+  default-language: Haskell2010

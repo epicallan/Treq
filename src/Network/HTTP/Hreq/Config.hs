@@ -1,4 +1,4 @@
--- | 'HttpConfig' is used in the 'Hreq' Monad for HTTP client configuration
+-- | 'HttpConfig' is used in the 'Network.HTTP.Hreq.Internal.Hreq' Monad for HTTP client configuration
 --
 module Network.HTTP.Hreq.Config
   ( -- * HttpConfig

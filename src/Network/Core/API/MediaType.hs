@@ -10,6 +10,9 @@ module Network.Core.API.MediaType
   , parseAccept
   )where
 
+import Prelude ()
+import Prelude.Compat
+
 import Control.Exception (Exception)
 import Data.Aeson (FromJSON, ToJSON, eitherDecodeStrict, encode)
 import Data.Bifunctor (first)
@@ -19,6 +22,7 @@ import Data.String.Conversions (cs)
 import Data.Text (Text)
 import Data.Typeable (Typeable)
 import Network.HTTP.Media (MediaType, matches, parseAccept, (//), (/:))
+import Text.Read (readMaybe)
 import Web.FormUrlEncoded (FromForm, ToForm, urlDecodeAsForm, urlEncodeAsForm)
 
 -- * Provided Content types
@@ -67,6 +71,10 @@ instance ToJSON a => MediaEncode JSON a where
 
 instance MediaDecode PlainText Text where
   mediaDecode _ = Right . cs
+
+instance Read a => MediaDecode PlainText a where
+  mediaDecode _ bs =
+    maybe (Left $ DecodeError $ "Failed to decode: " <> cs bs) Right . readMaybe $ cs bs
 
 instance Show a => MediaEncode PlainText a where
   mediaEncode _ = cs . show

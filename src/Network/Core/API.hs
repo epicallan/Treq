@@ -1,6 +1,6 @@
--- | This module provides re-exports types and combinators required for type level
--- construction of API requests and declaring the type structure of the expected
--- Response
+-- | This module re-exports types and combinators required for type level
+-- construction of API request components and expected type structure of an http request response.
+
 module Network.Core.API
     ( -- * Request
       module Network.Core.API.Request
@@ -17,6 +17,7 @@ module Network.Core.API
       -- * API Type Synonyms
     , module Network.Core.API
       -- * Re-exports
+    , ToHttpApiData (..)
     , Header
     , Status (..)
     , HeaderName
@@ -29,6 +30,7 @@ import Network.Core.API.Response
 import Network.Core.API.TypeLevel
 import Network.Core.API.Verb
 import Network.HTTP.Types (Header, HeaderName, Status (..))
+import Web.HttpApiData (ToHttpApiData (..))
 
 type StatusCode = Int
 
@@ -49,5 +51,3 @@ type DeleteJson a = Delete '[ResBody JSON a]
 type RawResponse v = Verb v '[ Raw ]
 
 type EmptyResponse v = Verb v ('[ ] :: [ ResContent Type ])
-
--- TODO: Type-level tests using Type-spec

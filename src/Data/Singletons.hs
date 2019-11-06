@@ -22,14 +22,15 @@ import Data.Kind
 import GHC.TypeLits
 import Data.Typeable
 
+-- * Sing Type family
 type family Sing :: k -> Type
 
 class SingI a where
   sing :: Sing a
 
--- | TODO: Maybe add a SingKind class and SingKind instances
+--  TODO: Maybe add a SingKind class and SingKind instances
 
--- | Type-lits
+-- * Type-lits
 -------------------
 
 data SNat (n :: Nat) =  KnownNat n => SNat
@@ -54,7 +55,7 @@ withKnownNat SNat f = f
 withKnownSymbol :: Sing n -> (KnownSymbol n => r) -> r
 withKnownSymbol SSym f = f
 
--- | Lists
+-- * Lists
 ----------------------
 
 data SList :: [k] -> Type where
@@ -69,7 +70,7 @@ instance SingI ('[] :: [k]) where
 instance (SingI x, SingI xs) => SingI ( (x ': xs)  :: [k]) where
   sing = SCons sing sing
 
--- | Tuples
+-- * Tuples
 -------------------
 
 data STuple2 (a :: (k1, k2)) where
@@ -80,7 +81,7 @@ instance (SingI x, SingI y) => SingI ( '(x, y) :: (k1, k2)) where
 
 type instance Sing = STuple2
 
--- | TypeRep
+-- * TypeRep
 ----------------------------------
 
 data STypeRep :: Type -> Type where

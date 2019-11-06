@@ -4,6 +4,7 @@ module Hreq.SuccessSpec (spec) where
 import Data.Proxy
 import Test.Hspec
 
+import Data.Foldable
 import Hreq.Util (TestState (..), TestUser (..), defaultResponse, runHttpPure)
 import Network.HTTP.Hreq
 
@@ -30,10 +31,36 @@ successSpec = do
           Just (body, _ )  = reqBody req
       body `shouldBe` mediaEncode (Proxy @JSON) testUser
 
+    it "works with query flags" $ do
+      let x = hreq @("users" :> QueryFlag "male" :> QueryFlag "old" :> RawResponse GET) Empty
+          RunHttp req _ = runHttpPure @'Default baseUrl x
+      reqPath req `shouldBe` "/users"
+      toList (reqQueryString req) `shouldBe` [("male", Nothing), ("old", Nothing)]
+
     it "works with capture" $ do
       let x = hreq @(Capture String :> RawResponse GET) ("allan" :. Empty)
           RunHttp req _ = runHttpPure @'Default baseUrl x
-      reqPath req `shouldBe` "allan"
+      reqPath req `shouldBe` "/allan"
+
+    it "works with captureAll" $ do
+      let x = hreq @(CaptureAll String :> RawResponse GET) (["allan", "lukwago"] :. Empty)
+          RunHttp req _ = runHttpPure @'Default baseUrl x
+      reqPath req `shouldBe` "/allan/lukwago"
+
+    it "works with single query params" $ do
+      let x = hreq @(Param "name" String :> RawResponse GET) ("allan" :. Empty)
+          RunHttp req _ = runHttpPure @'Default baseUrl x
+      toList (reqQueryString req) `shouldBe` [("name", Just "allan")]
+
+    it "works with multi query params" $ do
+      let x = hreq @(Param "name" String :> Param "age" Int :> RawResponse GET) ("allan" :. 29 :. Empty)
+          RunHttp req _ = runHttpPure @'Default baseUrl x
+      toList (reqQueryString req) `shouldBe`  [("name", Just "allan"), ("age", Just "29")]
+
+    it "works with multi query params as a list" $ do
+      let x = hreq @(Params '["name" := String, "age" := Int] :> RawResponse GET) ("allan" :. 29 :. Empty)
+          RunHttp req _ = runHttpPure @'Default baseUrl x
+      toList (reqQueryString req) `shouldBe`  [("name", Just "allan"), ("age", Just "29")]
 
   describe "Works with response components" $ do
     it "works with single verb requests" $ do

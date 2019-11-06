@@ -1,6 +1,7 @@
 {-# LANGUAGE TupleSections #-}
 module Network.HTTP.Hreq.Internal
   ( Hreq (..)
+  , RunHttp (..)
   , runHreq
   , runHreqWithConfig
   ) where
@@ -15,6 +16,7 @@ import Control.Monad.Reader (MonadIO (..), MonadReader, MonadTrans, ReaderT (..)
 import Control.Monad.STM (STM, atomically)
 import qualified Data.ByteString.Lazy as LBS
 import Data.Maybe (maybeToList)
+import Data.Foldable (toList)
 import Data.String.Conversions (cs)
 import Data.Time.Clock (UTCTime, getCurrentTime)
 import qualified Network.HTTP.Client as HTTP
@@ -117,7 +119,7 @@ requestToHTTPRequest burl r = HTTP.defaultRequest
     , HTTP.host = cs $ baseUrlHost burl
     , HTTP.port = baseUrlPort burl
     , HTTP.path = cs $ baseUrlPath burl <> reqPath r
-    , HTTP.queryString = renderQuery True $ reqQueryString r
+    , HTTP.queryString = renderQuery True $ toList $ reqQueryString r
     , HTTP.requestHeaders = maybeToList acceptHeader <> maybeToList contentType <> headers
     , HTTP.requestBody = body
     , HTTP.secure = isSecure
@@ -125,7 +127,7 @@ requestToHTTPRequest burl r = HTTP.defaultRequest
   where
     headers :: [ Header ]
     headers = filter ( \(hname, _) -> hname /= hAccept && hname /= hContentType)
-            $ reqHeaders r
+            $ toList $ reqHeaders r
 
     acceptHeader :: Maybe Header
     acceptHeader = (hAccept, ) . renderHeader <$> reqAccept r

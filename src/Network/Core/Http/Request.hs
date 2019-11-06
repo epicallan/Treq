@@ -5,6 +5,7 @@ import Prelude ()
 import Prelude.Compat
 
 import Data.ByteString as B
+import qualified Data.Sequence as Seq
 import Data.Text
 import Data.Typeable
 import GHC.Generics
@@ -17,10 +18,10 @@ data RequestF body = Request
   { reqPath        :: Text
   , reqMethod      :: Method
   , reqBody        :: Maybe (body, MediaType)
-  , reqQueryString :: [QueryItem]
+  , reqQueryString :: Seq.Seq QueryItem
   , reqHttpVersion :: HttpVersion
   , reqAccept      :: Maybe MediaType
-  , reqHeaders     :: [Header]
+  , reqHeaders     :: Seq.Seq Header
   } deriving (Eq, Show, Generic, Functor, Typeable)
 
 type Request= RequestF ByteString
@@ -30,28 +31,28 @@ defaultRequest = Request
   { reqPath = ""
   , reqMethod = methodGet
   , reqBody = Nothing
-  , reqQueryString = []
+  , reqQueryString = Seq.empty
   , reqHttpVersion = http11
   , reqAccept = Nothing
-  , reqHeaders = []
+  , reqHeaders = Seq.empty
   }
 
 appendMethod :: Method -> Request -> Request
 appendMethod method req = req { reqMethod = method }
 
 appendToPath :: Text -> Request -> Request
-appendToPath p req = req { reqPath = reqPath req <> p }
+appendToPath p req = req { reqPath = reqPath req <> "/" <> p }
 
 appendToQueryString
   :: QueryItem
   -> Request
   -> Request
 appendToQueryString queryItem req =
-  req { reqQueryString = queryItem : reqQueryString req }
+  req { reqQueryString =  reqQueryString req Seq.|> queryItem }
 
 addHeader :: ToHttpApiData a => HeaderName -> a -> Request -> Request
 addHeader name val req =
-  req {reqHeaders = (name, toHeader val) : reqHeaders req}
+  req {reqHeaders = reqHeaders req Seq.|> (name, toHeader val) }
 
 setReqBody :: ByteString -> MediaType -> Request -> Request
 setReqBody body mediaType req =

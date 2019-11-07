@@ -2,11 +2,11 @@
 -- run HTTP requests.
 --
 {-# LANGUAGE DeriveFunctor #-}
-module Network.Core.Http.RunHttp where
+module Hreq.Core.Http.RunHttp where
 
-import Network.Core.Http.HttpError
-import Network.Core.Http.Request
-import Network.Core.Http.Response
+import Hreq.Core.Http.HttpError
+import Hreq.Core.Http.Request
+import Hreq.Core.Http.Response
 
 -- | Provides the capability to run a request and get a response.
 class Monad m => RunHttp m where

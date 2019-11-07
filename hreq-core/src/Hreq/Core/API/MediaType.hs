@@ -2,8 +2,8 @@
 -- and class to serialize and deserialize them.
 -- At the moment we only support a small set but its possible to write own custom
 -- types and provide the required instances.
-module Network.Core.API.MediaType
-  ( module Network.Core.API.MediaType
+module Hreq.Core.API.MediaType
+  ( module Hreq.Core.API.MediaType
   , MediaType
   , (//)
   , matches

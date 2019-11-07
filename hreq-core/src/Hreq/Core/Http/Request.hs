@@ -1,11 +1,11 @@
 -- | This module provides a 'Request' data type which contains components required for
 -- creation of an HTTP Request.
 --
--- 'Request' data is built from type level API endpoints and the 'Network.Core.Http.BaseUrl.BaseUrl'
--- with in the 'Network.Core.API.HasRequest.HasRequest' class instance.
+-- 'Request' data is built from type level API endpoints and the 'Hreq.Core.Http.BaseUrl.BaseUrl'
+-- with in the 'Hreq.Core.API.HasRequest.HasRequest' class instance.
 --
 {-# LANGUAGE DeriveFunctor #-}
-module Network.Core.Http.Request where
+module Hreq.Core.Http.Request where
 
 import Prelude ()
 import Prelude.Compat

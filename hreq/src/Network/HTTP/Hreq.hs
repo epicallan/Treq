@@ -183,9 +183,9 @@
 --
 module Network.HTTP.Hreq
   ( -- * API
-    module Network.Core.API
+    module Hreq.Core.API
     -- * HTTP
-  , module Network.Core.Http
+  , module Hreq.Core.Http
 
    -- * Hreq
   , module Network.HTTP.Hreq.Internal
@@ -195,11 +195,11 @@ module Network.HTTP.Hreq
 import Network.HTTP.Hreq.Config (HttpConfig (..), StatusRange (..), createDefConfig)
 import Network.HTTP.Hreq.Internal (Hreq (..), RunHttp (..), runHreq, runHreqWithConfig)
 
-import Network.Core.API
-import Network.Core.Http
+import Hreq.Core.API
+import Hreq.Core.Http
 
 -- $setup
--- >>> import Network.Core.API
+-- >>> import Hreq.Core.API
 -- >>> import GHC.Generics
 -- >>> import Data.Aeson
 -- >>> import Data.Hlist

@@ -1,7 +1,7 @@
 -- | Specification for valid Response component types used at the Kind and Type level
 -- for creating an API structure.
 --
-module Network.Core.API.Response where
+module Hreq.Core.API.Response where
 
 import Data.Kind (Type)
 import Data.Singletons (Sing, SingI (..))

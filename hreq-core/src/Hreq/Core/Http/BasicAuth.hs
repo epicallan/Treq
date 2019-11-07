@@ -1,11 +1,11 @@
 -- | Provides Basic Authentication support
-module Network.Core.Http.BasicAuth where
+module Hreq.Core.Http.BasicAuth where
 
 import Prelude ()
 import Prelude.Compat
 
 import Data.Text
-import Network.Core.Http.Request
+import Hreq.Core.Http.Request
 
 -- | Required data for Basic Authentication
 data BasicAuthData = BasicAuthData

@@ -106,6 +106,7 @@ test-suite doctests
   main-is:          DocTests.hs
   build-depends:
       base       >= 4.10.1 && < 5
+    , aeson     >= 1.4.5 && < 1.5,
     , doctest    >=0.15 && < 0.17
     , hreq
 

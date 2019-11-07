@@ -52,14 +52,13 @@ data User = User
 main' :: IO ()
 main' = do
   res <- runHreq baseUrl $ do
+  
     -- | Makes Post request with newUser as a request body
-
     createdUser <- createUser newUser
-
     -- | Makes Get Request with "allan" as a URL fragment
     myUser      <- getUserByName "allan"
-
-    -- | makes a Ger Request returning a list of Users
+    
+    -- | makes a Get Request returning a list of Users
     allUsers    <- hreq @(GetJson [User]) Empty
     return (createdUser, myUser, allUsers)
   print res

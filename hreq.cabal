@@ -132,13 +132,12 @@ test-suite spec
 
 test-suite doctests
   type:             exitcode-stdio-1.0
-  main-is:          doc-tests.hs
+  main-is:          DocTests.hs
   build-depends:
       base       >= 4.10.1 && < 5
     , doctest    >=0.15 && < 0.17
     , hreq
 
   ghc-options:      -Wall -threaded
-  default-extensions: DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses TypeApplications TypeFamilies OverloadedStrings GADTs ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures
   hs-source-dirs:   test
   default-language: Haskell2010

@@ -1,5 +1,4 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE TypeApplications    #-}
 module Network.Core.Http.HasHttp where
 
 import Control.Monad.Except

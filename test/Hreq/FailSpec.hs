@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
 module Hreq.FailSpec (spec) where
 
 import Hreq.Util (TestState (..), TestUser, defaultResponse, runHttpPure)

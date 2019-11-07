@@ -1,7 +1,6 @@
 -- | Interprets a 'ReqContent' type level list into a 'Request'
 --
 {-# LANGUAGE PatternSynonyms      #-}
-{-# LANGUAGE TypeApplications     #-}
 module Network.Core.Http.HasRequest where
 
 import Prelude ()

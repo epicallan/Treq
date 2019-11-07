@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
 module Hreq.SuccessSpec (spec) where
 
 import Data.Proxy

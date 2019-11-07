@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
 module Network.Core.Http.HasResponse where
 
 import Control.Monad.Except

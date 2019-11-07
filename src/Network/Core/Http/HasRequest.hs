@@ -1,4 +1,5 @@
--- | Interprets a 'ReqContent' type level list into a 'Request'
+-- | This module provides a 'HasRequest' class that Interprets
+-- a 'ReqContent' type level list into 'Request' data
 --
 {-# LANGUAGE PatternSynonyms      #-}
 module Network.Core.Http.HasRequest where

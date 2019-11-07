@@ -1,4 +1,4 @@
--- | Specification of API has a composition of Request and Response components
+-- | Specification for an API endpoint as a composition of Request and Response components
 -- at the Type level.
 module Network.Core.API.Internal where
 

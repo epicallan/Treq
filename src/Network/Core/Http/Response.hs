@@ -1,3 +1,5 @@
+-- | This module provides the 'Response' type which is the result of an HTTP request.
+--
 {-# LANGUAGE DeriveFunctor #-}
 module Network.Core.Http.Response where
 
@@ -7,6 +9,7 @@ import GHC.Generics
 
 import Network.HTTP.Types (Header, HttpVersion (..), Status)
 
+-- * Response
 data ResponseF a = Response
   { resStatus      :: Status
   , resHeaders     :: [Header]

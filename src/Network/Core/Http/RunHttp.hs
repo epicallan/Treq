@@ -1,3 +1,6 @@
+-- | The 'RunHttp' module provides a class which any client must instantiate in order to
+-- run HTTP requests.
+--
 {-# LANGUAGE DeriveFunctor #-}
 module Network.Core.Http.RunHttp where
 
@@ -12,6 +15,8 @@ class Monad m => RunHttp m where
   throwHttpError :: HttpError -> m a
 
   checkResponse :: Request -> Response -> m (Maybe HttpError)
+
+-- * HttpPure
 
 -- | A pure HTTP client monad useful for testing.
 data HttpPure (state :: k) a

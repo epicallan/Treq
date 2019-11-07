@@ -134,7 +134,7 @@
 --
 -- =====CaptureAll
 --
--- 'CaputureAll' is useful for a specifying a request composed of multiple URL parameter fragments of the
+-- 'CaptureAll' is useful for a specifying a request composed of multiple URL parameter fragments of the
 -- same type in a concise manner.
 --
 -- >>> type CaptureAllExample = "users" :> CaptureAll String :> GetJson User
@@ -175,7 +175,7 @@
 --
 -- =====Returning multiple values Example
 --
--- >>> type MultiResults = Get '[ ResBody JSON User, ResHeaders '[ "key-header" := String ] ]
+-- >>> type MultiResultsQuery = Get '[ ResBody JSON User, ResHeaders '[ "key-header" := String ] ]
 --
 -- > multiResults :: RunHttp m => m (Hlist '[ User, [Header] ])
 --

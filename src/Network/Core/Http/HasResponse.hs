@@ -1,3 +1,8 @@
+-- | This module provides a 'HasResponse' class that Interprets
+-- 'Verb' content into a particular api endpoint query result.
+--
+-- For instance @Verb GET '[]@ gets interpreted as an empty response of type Unit i.e @()@
+--
 module Network.Core.Http.HasResponse where
 
 import Control.Monad.Except

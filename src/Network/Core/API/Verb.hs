@@ -1,5 +1,5 @@
--- | Module for working with HTTP methods and the resulting content from
--- using them at the type level.
+-- | Module for working with HTTP methods and the resulting content at the type level.
+--
 module Network.Core.API.Verb
   ( module Network.Core.API.Verb
     -- * Re-exports

@@ -1,3 +1,9 @@
+-- | This module provides a 'Request' data type which contains components required for
+-- creation of an HTTP Request.
+--
+-- 'Request' data is built from type level API endpoints and the 'Network.Core.Http.BaseUrl.BaseUrl'
+-- with in the 'Network.Core.API.HasRequest.HasRequest' class instance.
+--
 {-# LANGUAGE DeriveFunctor #-}
 module Network.Core.Http.Request where
 
@@ -14,6 +20,7 @@ import Network.HTTP.Types (Header, HeaderName, HttpVersion (..), Method, QueryIt
                            methodGet)
 import Web.HttpApiData (ToHttpApiData (..))
 
+-- * Request
 data RequestF body = Request
   { reqPath        :: Text
   , reqMethod      :: Method
@@ -24,8 +31,9 @@ data RequestF body = Request
   , reqHeaders     :: Seq.Seq Header
   } deriving (Eq, Show, Generic, Functor, Typeable)
 
-type Request= RequestF ByteString
+type Request = RequestF ByteString
 
+-- * Default Request
 defaultRequest :: Request
 defaultRequest = Request
   { reqPath = ""
@@ -37,6 +45,7 @@ defaultRequest = Request
   , reqHeaders = Seq.empty
   }
 
+-- * Request helper functions
 appendMethod :: Method -> Request -> Request
 appendMethod method req = req { reqMethod = method }
 

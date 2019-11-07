@@ -16,20 +16,20 @@ import Network.Core.API.Verb (Verb)
 
 -- | 'ApiToReq' transforms an API type into a type level list of
 -- Request component content types.
--- The resulting list is used by the 'HasRequest' class.
+-- The resulting list is used by the 'Network.Core.API.HasRequest.HasRequest' class.
 type family ApiToReq (a :: api) :: [ ReqContent Type]  where
   ApiToReq (Verb m ts) =  '[ ]
   ApiToReq ( (path :: Symbol) :> ts) = 'Path () path ': ApiToReq ts
   ApiToReq ( (x :: ReqContent Type) :> ts) = x ': ApiToReq ts
 
 -- | Given an API type, 'GetVerb' retrieves the Verb type component which
--- is used by the 'HasResponse' class.
+-- is used by the 'Network.Core.Http.HasResponse.HasResponse' class.
 type family GetVerb (a :: api) :: Type  where
   GetVerb (Verb m ts) =  Verb m ts
   GetVerb (api :> sub) = GetVerb sub
 
 -- | 'HttpReq' interprets a 'ReqContent' list as a 'Type' level list
--- used in the 'Network.Core.Http.HasRequest' class for representing
+-- used in the 'Network.Core.Http.HasRequest.HasRequest' class for representing
 -- request component inputs
 type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq '[] = '[]
@@ -54,7 +54,7 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq ('ReqHeaders '[] : ts) = HttpReq ts
 
 -- | 'HttpRes' interprets a 'ResContent' list as a Type level list for
--- used 'Network.Core.Http.HasResponse' class to represent responses
+-- used 'Network.Core.Http.HasResponse.HasResponse' class to represent responses
 type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
   HttpRes '[] = '[]
   HttpRes ('ResBody ctyp a ': ts) = a ': HttpRes ts

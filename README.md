@@ -8,7 +8,7 @@
 
 Hreq is a high-level easy to use type-driven HTTP client library inspired by Servant-Client. Hreq provides an alternative approach to type-safe construction and interpretation of API endpoints for Http client requests.
 
-The Hreq github repository is a mono-repo composed of [hreq-core](https://github.com/epicallan/hreq/tree/master/hreq-core) implementing core functionality and [hreq](https://github.com/epicallan/hreq/tree/master/hreq), which uses hreq-core's functionality as an HTTP client monad.
+The Hreq github repository is a mono-repo composed of [hreq-core](https://github.com/epicallan/hreq/tree/master/hreq-core) implementing core functionality and [hreq](https://github.com/epicallan/hreq/tree/master/hreq), which uses this functionality as an HTTP client monad.
 
 ### Checkout accompanying blog post for more details
 

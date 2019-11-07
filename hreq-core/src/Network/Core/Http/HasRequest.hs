@@ -63,7 +63,7 @@ instance
     in appendMethod method' $ req' { reqAccept = acceptHeader }
 
 getAcceptHeader
-  :: forall (rs :: [ ResContent Type]) . HttpResConstraints rs
+  :: forall (rs :: [ResContent Type]) . HttpResConstraints rs
   => Sing rs -> Maybe MediaType
 getAcceptHeader = \case
   SNil -> Nothing

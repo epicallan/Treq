@@ -22,13 +22,12 @@ install:
     ghc --version
     cabal --version
     cabal new-update
-    cabal new-configure
-    cabal new-build --enable-tests
+    cabal new-build all --enable-tests
 
 script:
-  - cabal new-test
+  - cabal new-test all
   # HLint check
-  - curl -sSL https://raw.github.com/ndmitchell/neil/master/misc/travis.sh | sh -s -- hlint -XTypeApplications src/
+  - curl -sSL https://raw.github.com/ndmitchell/neil/master/misc/travis.sh | sh -s -- hlint -XTypeApplications hreq/src/ hreq-core/src/
 
 notifications:
   email: false

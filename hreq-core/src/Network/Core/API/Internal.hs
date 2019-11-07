@@ -29,6 +29,13 @@ instance (SingI content) => SingI ('Req content :: Api Type) where
 
 -- * API Type combinators
 -- Used in concatenation of API types.
+--
+-- Examples
+--
+-- >>> PathQueryWithEmptyResponse = "hello" :> QueryFlag "young" :> Get '[]
+-- >>> PathQueryWithResponse = "hello" :> QueryFlag "young" :> Get '[ ResBody JSON String, ResHeader [ "headerName" := String ]]
+-- >>> JsonBodyAndResponse = "hello" :> JsonBody User :> GetJson User
+
 infixr 7 :>
 
 data (a :: k1) :> (b :: k2)
@@ -37,3 +44,11 @@ data (a :: k1) :> (b :: k2)
 infixr 1 :=
 
 type (a :: Symbol) := (b :: k2) = '( a, b)
+
+-- $setup
+-- >>> import Network.Core.API
+-- >>> import GHC.Generics
+-- >>> import Data.Aeson
+-- >>> data User = User deriving (Show)
+-- >>> instance ToJSON User where toJSON = undefined
+-- >>> instance FromJSON User where parseJSON = undefined

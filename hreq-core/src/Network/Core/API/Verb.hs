@@ -18,6 +18,8 @@ import Network.HTTP.Types.Method (Method, StdMethod (..), methodConnect, methodD
 -- request call represented as content list and the HTTP method
 -- associated with it. Type synonyms for common verbs are provided but you
 -- free to define your own
+--
+-- >>> type Trace = Verb 'TRACE
 data Verb (method :: k1) (contents:: [k2])
   deriving (Typeable, Generic)
 

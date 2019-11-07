@@ -8,6 +8,8 @@
 
 Hreq is a high-level easy to use type-driven HTTP client library inspired by Servant-Client. Hreq provides an alternative approach to type-safe construction and interpretation of API endpoints for Http client requests.
 
+The Hreq github repository is a mono-repo composed of [hreq-core](https://github.com/epicallan/hreq/tree/master/hreq-core) implementing core functionality and [hreq](https://github.com/epicallan/hreq/tree/master/hreq), which uses hreq-core's functionality as an HTTP client monad.
+
 ### Checkout accompanying blog post for more details
 
 * [HTTP Requests with Hreq](https://lukwagoallan.com/posts/http-requests-with-hreq)
@@ -78,7 +80,6 @@ getUserByName userName = hreq @(Capture String :> GetJson User) (userName :. Emp
 ### Attribution
 
 Hreq is heavily inspired by [servant-client](https://github.com/haskell-servant/servant) and ideas from [Serv](https://github.com/tel/serv).
-
 
 ### Documentation
 

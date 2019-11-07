@@ -2,7 +2,7 @@
 -- 'RunHttp' class and hence making it an HTTP client.
 --
 {-# LANGUAGE TupleSections #-}
-module Network.HTTP.Hreq.Internal
+module Hreq.Client.Internal.HTTP
   ( -- * Hreq monad
     Hreq (..)
   , RunHttp (..)
@@ -29,7 +29,7 @@ import Network.HTTP.Media (renderHeader)
 import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCode)
 
 import Hreq.Core.Http
-import Network.HTTP.Hreq.Config
+import Hreq.Client.Internal.Config
 
 -- | Monad for running Http client requests
 newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }

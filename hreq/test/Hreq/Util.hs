@@ -4,7 +4,7 @@ module Hreq.Util where
 import Data.Aeson
 import GHC.Generics
 
-import Network.HTTP.Hreq
+import Hreq.Client
 import Network.HTTP.Types (hContentType, http11, status200)
 
 defaultResponse :: Response

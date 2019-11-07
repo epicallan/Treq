@@ -5,7 +5,7 @@ import Test.Hspec
 
 import Data.Foldable
 import Hreq.Util (TestState (..), TestUser (..), defaultResponse, runHttpPure)
-import Network.HTTP.Hreq
+import Hreq.Client
 
 spec :: Spec
 spec = describe "Hreq.SuccessSpec" successSpec

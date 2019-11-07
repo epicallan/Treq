@@ -31,9 +31,9 @@ custom-setup
 
 library
   exposed-modules:
-      Network.HTTP.Hreq
-    , Network.HTTP.Hreq.Config
-    , Network.HTTP.Hreq.Internal
+      Hreq.Client
+    , Hreq.Client.Internal.Config
+    , Hreq.Client.Internal.HTTP
 
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData
 

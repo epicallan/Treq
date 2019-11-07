@@ -1,7 +1,7 @@
 module Hreq.FailSpec (spec) where
 
 import Hreq.Util (TestState (..), TestUser, defaultResponse, runHttpPure)
-import Network.HTTP.Hreq
+import Hreq.Client
 import Test.Hspec
 
 spec :: Spec

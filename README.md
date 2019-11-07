@@ -44,7 +44,7 @@ module Main where
 
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics (Generic)
-import Network.HTTP.Hreq
+import Hreq.Client
 
 data User = User
   { name :: String

@@ -181,19 +181,19 @@
 --
 -- >>> multiResults = hreq @MultiResultsQuery Empty
 --
-module Network.HTTP.Hreq
+module Hreq.Client
   ( -- * API
     module Hreq.Core.API
     -- * HTTP
   , module Hreq.Core.Http
 
    -- * Hreq
-  , module Network.HTTP.Hreq.Internal
-  , module Network.HTTP.Hreq.Config
+  , module Hreq.Client.Internal.HTTP
+  , module Hreq.Client.Internal.Config
   ) where
 
-import Network.HTTP.Hreq.Config (HttpConfig (..), StatusRange (..), createDefConfig)
-import Network.HTTP.Hreq.Internal (Hreq (..), RunHttp (..), runHreq, runHreqWithConfig)
+import Hreq.Client.Internal.Config (HttpConfig (..), StatusRange (..), createDefConfig)
+import Hreq.Client.Internal.HTTP (Hreq (..), RunHttp (..), runHreq, runHreqWithConfig)
 
 import Hreq.Core.API
 import Hreq.Core.Http

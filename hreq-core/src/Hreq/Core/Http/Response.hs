@@ -1,7 +1,7 @@
 -- | This module provides the 'Response' type which is the result of an HTTP request.
 --
 {-# LANGUAGE DeriveFunctor #-}
-module Network.Core.Http.Response where
+module Hreq.Core.Http.Response where
 
 import Data.ByteString.Lazy as LBS
 import Data.Typeable

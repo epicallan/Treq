@@ -1,15 +1,15 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
-module Network.Core.Http.HasHttp where
+module Hreq.Core.Http.HasHttp where
 
 import Control.Monad.Except
 import Data.Proxy
 
-import Network.Core.API
-import Network.Core.Http.HasRequest
-import Network.Core.Http.HasResponse
-import Network.Core.Http.HttpError
-import Network.Core.Http.Request
-import Network.Core.Http.RunHttp
+import Hreq.Core.API
+import Hreq.Core.Http.HasRequest
+import Hreq.Core.Http.HasResponse
+import Hreq.Core.Http.HttpError
+import Hreq.Core.Http.Request
+import Hreq.Core.Http.RunHttp
 
 -- | 'HasHttp' represent constraints required to interpret a type level API into an actual
 -- HTTP network request.

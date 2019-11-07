@@ -2,7 +2,7 @@
 -- a 'ReqContent' type level list into 'Request' data
 --
 {-# LANGUAGE PatternSynonyms      #-}
-module Network.Core.Http.HasRequest where
+module Hreq.Core.Http.HasRequest where
 
 import Prelude ()
 import Prelude.Compat
@@ -18,9 +18,9 @@ import Data.List (intersperse)
 import qualified Data.Text as T (concat)
 import Web.HttpApiData (ToHttpApiData (..))
 
-import Network.Core.API
-import Network.Core.Http.Request
-import Network.Core.Http.BasicAuth
+import Hreq.Core.API
+import Hreq.Core.Http.Request
+import Hreq.Core.Http.BasicAuth
 import Network.HTTP.Types (QueryItem)
 
 pattern Empty :: Hlist '[]

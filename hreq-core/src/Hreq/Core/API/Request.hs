@@ -1,7 +1,7 @@
 -- | Specification for valid Request component types used at the Kind and Type level for
 -- creating an API structure.
 --
-module Network.Core.API.Request where
+module Hreq.Core.API.Request where
 
 import Data.Kind (Type)
 import Data.Singletons (Sing, SingI(..))

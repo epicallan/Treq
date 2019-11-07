@@ -1,35 +1,35 @@
 -- | Type level functions over 'ReqContent' and 'ResContent'
 --
-module Network.Core.API.TypeLevel where
+module Hreq.Core.API.TypeLevel where
 
 import Data.Kind (Type, Constraint)
 import GHC.TypeLits (Symbol, TypeError, ErrorMessage(..), KnownSymbol)
 import Network.HTTP.Types (Header)
 import Web.HttpApiData (ToHttpApiData)
 
-import Network.Core.Http.BasicAuth (BasicAuthData)
-import Network.Core.API.Request (ReqContent(..))
-import Network.Core.API.Response (ResContent (..))
-import Network.Core.API.Internal ((:>))
-import Network.Core.API.MediaType (MediaDecode, MediaEncode, HasMediaType)
-import Network.Core.API.Verb (Verb)
+import Hreq.Core.Http.BasicAuth (BasicAuthData)
+import Hreq.Core.API.Request (ReqContent(..))
+import Hreq.Core.API.Response (ResContent (..))
+import Hreq.Core.API.Internal ((:>))
+import Hreq.Core.API.MediaType (MediaDecode, MediaEncode, HasMediaType)
+import Hreq.Core.API.Verb (Verb)
 
 -- | 'ApiToReq' transforms an API type into a type level list of
 -- Request component content types.
--- The resulting list is used by the 'Network.Core.API.HasRequest.HasRequest' class.
+-- The resulting list is used by the 'Hreq.Core.API.HasRequest.HasRequest' class.
 type family ApiToReq (a :: api) :: [ ReqContent Type]  where
   ApiToReq (Verb m ts) =  '[ ]
   ApiToReq ( (path :: Symbol) :> ts) = 'Path () path ': ApiToReq ts
   ApiToReq ( (x :: ReqContent Type) :> ts) = x ': ApiToReq ts
 
 -- | Given an API type, 'GetVerb' retrieves the Verb type component which
--- is used by the 'Network.Core.Http.HasResponse.HasResponse' class.
+-- is used by the 'Hreq.Core.Http.HasResponse.HasResponse' class.
 type family GetVerb (a :: api) :: Type  where
   GetVerb (Verb m ts) =  Verb m ts
   GetVerb (api :> sub) = GetVerb sub
 
 -- | 'HttpReq' interprets a 'ReqContent' list as a 'Type' level list
--- used in the 'Network.Core.Http.HasRequest.HasRequest' class for representing
+-- used in the 'Hreq.Core.Http.HasRequest.HasRequest' class for representing
 -- request component inputs
 type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq '[] = '[]
@@ -54,7 +54,7 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq ('ReqHeaders '[] : ts) = HttpReq ts
 
 -- | 'HttpRes' interprets a 'ResContent' list as a Type level list for
--- used 'Network.Core.Http.HasResponse.HasResponse' class to represent responses
+-- used 'Hreq.Core.Http.HasResponse.HasResponse' class to represent responses
 type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
   HttpRes '[] = '[]
   HttpRes ('ResBody ctyp a ': ts) = a ': HttpRes ts

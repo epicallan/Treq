@@ -3,7 +3,7 @@
 --
 -- For instance @Verb GET '[]@ gets interpreted as an empty response of type Unit i.e @()@
 --
-module Network.Core.Http.HasResponse where
+module Hreq.Core.Http.HasResponse where
 
 import Control.Monad.Except
 import Data.Kind
@@ -15,9 +15,9 @@ import qualified Data.List.NonEmpty as NE
 import GHC.TypeLits
 import Network.HTTP.Types (hContentType)
 
-import Network.Core.API
-import Network.Core.Http.HttpError
-import Network.Core.Http.Response
+import Hreq.Core.API
+import Hreq.Core.Http.HttpError
+import Hreq.Core.Http.Response
 
 class MonadError HttpError m => HasResponse (a :: k) m where
    type HttpOutput a :: Type

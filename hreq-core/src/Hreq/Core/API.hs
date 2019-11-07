@@ -1,21 +1,21 @@
 -- | This module re-exports types and combinators required for type level
 -- construction of API request components and expected type structure of an http request response.
 
-module Network.Core.API
+module Hreq.Core.API
     ( -- * Request
-      module Network.Core.API.Request
+      module Hreq.Core.API.Request
       -- * Response
-    , module Network.Core.API.Response
+    , module Hreq.Core.API.Response
       -- * API Types and Kinds
-    , module Network.Core.API.Internal
+    , module Hreq.Core.API.Internal
       -- * MediaType
-    , module Network.Core.API.MediaType
+    , module Hreq.Core.API.MediaType
       -- * TypeLevel
-    , module Network.Core.API.TypeLevel
+    , module Hreq.Core.API.TypeLevel
       -- * Verb
-    , module Network.Core.API.Verb
+    , module Hreq.Core.API.Verb
       -- * API Type Synonyms
-    , module Network.Core.API
+    , module Hreq.Core.API
       -- * Re-exports
     , ToHttpApiData (..)
     , Header
@@ -23,12 +23,12 @@ module Network.Core.API
     , HeaderName
     ) where
 import Data.Kind
-import Network.Core.API.Internal
-import Network.Core.API.MediaType
-import Network.Core.API.Request
-import Network.Core.API.Response
-import Network.Core.API.TypeLevel
-import Network.Core.API.Verb
+import Hreq.Core.API.Internal
+import Hreq.Core.API.MediaType
+import Hreq.Core.API.Request
+import Hreq.Core.API.Response
+import Hreq.Core.API.TypeLevel
+import Hreq.Core.API.Verb
 import Network.HTTP.Types (Header, HeaderName, Status (..))
 import Web.HttpApiData (ToHttpApiData (..))
 

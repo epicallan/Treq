@@ -31,23 +31,23 @@ custom-setup
 
 library
   exposed-modules:
-      Network.Core.Http
-    , Network.Core.API
-    , Network.Core.API.Internal
-    , Network.Core.API.MediaType
-    , Network.Core.API.Request
-    , Network.Core.API.Response
-    , Network.Core.API.TypeLevel
-    , Network.Core.API.Verb
-    , Network.Core.Http.BaseUrl
-    , Network.Core.Http.BasicAuth
-    , Network.Core.Http.HasHttp
-    , Network.Core.Http.HasRequest
-    , Network.Core.Http.HasResponse
-    , Network.Core.Http.HttpError
-    , Network.Core.Http.Request
-    , Network.Core.Http.Response
-    , Network.Core.Http.RunHttp
+      Hreq.Core.Http
+    , Hreq.Core.API
+    , Hreq.Core.API.Internal
+    , Hreq.Core.API.MediaType
+    , Hreq.Core.API.Request
+    , Hreq.Core.API.Response
+    , Hreq.Core.API.TypeLevel
+    , Hreq.Core.API.Verb
+    , Hreq.Core.Http.BaseUrl
+    , Hreq.Core.Http.BasicAuth
+    , Hreq.Core.Http.HasHttp
+    , Hreq.Core.Http.HasRequest
+    , Hreq.Core.Http.HasResponse
+    , Hreq.Core.Http.HttpError
+    , Hreq.Core.Http.Request
+    , Hreq.Core.Http.Response
+    , Hreq.Core.Http.RunHttp
     , Data.Hlist
     , Data.Singletons
 

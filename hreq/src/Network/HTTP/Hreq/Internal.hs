@@ -28,7 +28,7 @@ import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Media (renderHeader)
 import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCode)
 
-import Network.Core.Http
+import Hreq.Core.Http
 import Network.HTTP.Hreq.Config
 
 -- | Monad for running Http client requests

@@ -1,13 +1,13 @@
 -- | Specification for an API endpoint as a composition of Request and Response components
 -- at the Type level.
-module Network.Core.API.Internal where
+module Hreq.Core.API.Internal where
 
 import Data.Kind (Type)
 import Data.Singletons
 import GHC.TypeLits
 
-import Network.Core.API.Request
-import Network.Core.API.Response
+import Hreq.Core.API.Request
+import Hreq.Core.API.Response
 
 -- * API type
 data Api a =
@@ -46,7 +46,7 @@ infixr 1 :=
 type (a :: Symbol) := (b :: k2) = '( a, b)
 
 -- $setup
--- >>> import Network.Core.API
+-- >>> import Hreq.Core.API
 -- >>> import GHC.Generics
 -- >>> import Data.Aeson
 -- >>> data User = User deriving (Show)

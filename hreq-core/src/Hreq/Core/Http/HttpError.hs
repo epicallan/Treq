@@ -1,7 +1,7 @@
 -- | This module provides 'HttpError' constructors and type.
 --
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-module Network.Core.Http.HttpError where
+module Hreq.Core.Http.HttpError where
 
 import Control.Exception (Exception, SomeException (..))
 import Data.Text (Text)
@@ -9,15 +9,15 @@ import Data.Typeable (Typeable, typeOf)
 import GHC.Generics (Generic)
 import Network.HTTP.Media (MediaType)
 
-import Network.Core.Http.Request
-import Network.Core.Http.Response
+import Hreq.Core.Http.Request
+import Hreq.Core.Http.Response
 
 -- | A type representing possible errors in a request
 -- This type and the Eq instance is largely borrowed from servant-client
 --
 data HttpError =
   -- | The server returned an error response including the
-  -- failing request. 'reqPath' includes the 'Network.Core.Http.BaseUrl.BaseUrl' and the
+  -- failing request. 'reqPath' includes the 'Hreq.Core.Http.BaseUrl.BaseUrl' and the
   -- path of the request.
     FailureResponse Request Response
   -- | The body could not be decoded at the expected type

@@ -1,7 +1,7 @@
--- | This module provides 'HttpError' constructors and type.
+-- | This module provides 'ClientError' constructors and type.
 --
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-module Hreq.Core.Http.HttpError where
+module Hreq.Core.Client.ClientError where
 
 import Control.Exception (Exception, SomeException (..))
 import Data.Text (Text)
@@ -9,15 +9,15 @@ import Data.Typeable (Typeable, typeOf)
 import GHC.Generics (Generic)
 import Network.HTTP.Media (MediaType)
 
-import Hreq.Core.Http.Request
-import Hreq.Core.Http.Response
+import Hreq.Core.Client.Request
+import Hreq.Core.Client.Response
 
 -- | A type representing possible errors in a request
 -- This type and the Eq instance is largely borrowed from servant-client
 --
-data HttpError =
+data ClientError =
   -- | The server returned an error response including the
-  -- failing request. 'reqPath' includes the 'Hreq.Core.Http.BaseUrl.BaseUrl' and the
+  -- failing request. 'reqPath' includes the 'Hreq.Core.Client.BaseUrl.BaseUrl' and the
   -- path of the request.
     FailureResponse Request Response
   -- | The body could not be decoded at the expected type
@@ -30,7 +30,7 @@ data HttpError =
   | ConnectionError SomeException
   deriving (Show, Generic, Typeable)
 
-instance Eq HttpError where
+instance Eq ClientError where
   FailureResponse req res     == FailureResponse req' res'     = req == req' && res == res'
   DecodeFailure t r           == DecodeFailure t' r'           = t == t' && r == r'
   UnsupportedContentType mt r == UnsupportedContentType mt' r' = mt == mt' && r == r'
@@ -40,4 +40,4 @@ instance Eq HttpError where
       -- returns true, if type of exception is the same
       eqSomeException (SomeException a) (SomeException b) = typeOf a == typeOf b
 
-instance Exception HttpError
+instance Exception ClientError

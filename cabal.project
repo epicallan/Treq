@@ -2,3 +2,4 @@ packages:
   ./
   hreq/
   hreq-core/
+  hreq-conduit/

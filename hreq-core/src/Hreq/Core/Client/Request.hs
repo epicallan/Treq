@@ -1,24 +1,25 @@
 -- | This module provides a 'Request' data type which contains components required for
 -- creation of an HTTP Request.
 --
--- 'Request' data is built from type level API endpoints and the 'Hreq.Core.Http.BaseUrl.BaseUrl'
+-- 'Request' data is built from type level API endpoints and the 'Hreq.Core.Client.BaseUrl.BaseUrl'
 -- with in the 'Hreq.Core.API.HasRequest.HasRequest' class instance.
 --
 {-# LANGUAGE DeriveFunctor #-}
-module Hreq.Core.Http.Request where
+module Hreq.Core.Client.Request where
 
 import Prelude ()
 import Prelude.Compat
 
-import Data.ByteString as B
+import Data.ByteString (ByteString)
+import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Sequence as Seq
 import Data.Text
-import Data.Typeable
-import GHC.Generics
 import Network.HTTP.Media (MediaType)
 import Network.HTTP.Types (Header, HeaderName, HttpVersion (..), Method, QueryItem, http11,
                            methodGet)
 import Web.HttpApiData (ToHttpApiData (..))
+
+import Hreq.Core.API.Streaming (GivesPooper)
 
 -- * Request
 data RequestF body = Request
@@ -29,9 +30,18 @@ data RequestF body = Request
   , reqHttpVersion :: HttpVersion
   , reqAccept      :: Maybe MediaType
   , reqHeaders     :: Seq.Seq Header
-  } deriving (Eq, Show, Generic, Functor, Typeable)
+  } deriving (Show, Eq, Functor)
 
-type Request = RequestF ByteString
+
+-- | The Request body replica of the @http-client@ @RequestBody@.
+data RequestBody =
+    RequestBodyLBS LBS.ByteString
+  | RequestBodyBS ByteString
+  | RequestBodyStream (GivesPooper ())
+  deriving (Show, Eq)
+
+
+type Request = RequestF RequestBody
 
 -- * Default Request
 defaultRequest :: Request
@@ -63,6 +73,11 @@ addHeader :: ToHttpApiData a => HeaderName -> a -> Request -> Request
 addHeader name val req =
   req {reqHeaders = reqHeaders req Seq.|> (name, toHeader val) }
 
-setReqBody :: ByteString -> MediaType -> Request -> Request
+setReqBody :: RequestBody -> MediaType -> Request -> Request
 setReqBody body mediaType req =
   req { reqBody = Just (body, mediaType) }
+
+
+-- setReqBody :: ByteString -> MediaType -> Request -> Request
+-- setReqBody body mediaType req =
+--   req { reqBody = Just (body, mediaType) }

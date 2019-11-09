@@ -7,11 +7,12 @@ import GHC.TypeLits (Symbol, TypeError, ErrorMessage(..), KnownSymbol)
 import Network.HTTP.Types (Header)
 import Web.HttpApiData (ToHttpApiData)
 
-import Hreq.Core.Http.BasicAuth (BasicAuthData)
+import Hreq.Core.Client.BasicAuth (BasicAuthData)
 import Hreq.Core.API.Request (ReqContent(..))
 import Hreq.Core.API.Response (ResContent (..))
 import Hreq.Core.API.Internal ((:>))
 import Hreq.Core.API.MediaType (MediaDecode, MediaEncode, HasMediaType)
+import Hreq.Core.API.Streaming (HasStreamBody)
 import Hreq.Core.API.Verb (Verb)
 
 -- | 'ApiToReq' transforms an API type into a type level list of
@@ -23,13 +24,13 @@ type family ApiToReq (a :: api) :: [ ReqContent Type]  where
   ApiToReq ( (x :: ReqContent Type) :> ts) = x ': ApiToReq ts
 
 -- | Given an API type, 'GetVerb' retrieves the Verb type component which
--- is used by the 'Hreq.Core.Http.HasResponse.HasResponse' class.
+-- is used by the 'Hreq.Core.Client.HasResponse.HasResponse' class.
 type family GetVerb (a :: api) :: Type  where
   GetVerb (Verb m ts) =  Verb m ts
   GetVerb (api :> sub) = GetVerb sub
 
 -- | 'HttpReq' interprets a 'ReqContent' list as a 'Type' level list
--- used in the 'Hreq.Core.Http.HasRequest.HasRequest' class for representing
+-- used in the 'Hreq.Core.Client.HasRequest.HasRequest' class for representing
 -- request component inputs
 type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq '[] = '[]
@@ -37,6 +38,8 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq ('Path _ _ ': ts) = HttpReq ts
 
   HttpReq ('ReqBody ctyp a ': ts) = a ': HttpReq ts
+
+  HttpReq ('StreamBody ctyp a ': ts) = a ': HttpReq ts
 
   HttpReq ('BasicAuth _ _ : ts) = BasicAuthData ': HttpReq ts
 
@@ -54,7 +57,7 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
   HttpReq ('ReqHeaders '[] : ts) = HttpReq ts
 
 -- | 'HttpRes' interprets a 'ResContent' list as a Type level list for
--- used 'Hreq.Core.Http.HasResponse.HasResponse' class to represent responses
+-- used 'Hreq.Core.Client.HasResponse.HasResponse' class to represent responses
 type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
   HttpRes '[] = '[]
   HttpRes ('ResBody ctyp a ': ts) = a ': HttpRes ts
@@ -80,6 +83,10 @@ type family HttpReqConstraints (req :: [ReqContent Type]) :: Constraint where
 
   HttpReqConstraints ('ReqBody ctyp a ': ts ) =
     (HasMediaType ctyp, MediaEncode ctyp a, HttpReqConstraints ts)
+
+  HttpReqConstraints ('StreamBody ctyp a ': ts ) =
+    (HasMediaType ctyp, HasStreamBody a, HttpReqConstraints ts)
+
 
   HttpReqConstraints ('QueryFlags _a fs ': ts) = (All KnownSymbol fs, HttpReqConstraints ts)
 

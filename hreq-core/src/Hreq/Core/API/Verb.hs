@@ -9,7 +9,6 @@ module Hreq.Core.API.Verb
 
 import Data.Proxy (Proxy)
 import Data.Typeable (Typeable)
-import GHC.Generics (Generic)
 import Network.HTTP.Types.Method (Method, StdMethod (..), methodConnect, methodDelete, methodGet,
                                   methodHead, methodOptions, methodPatch, methodPost, methodPut,
                                   methodTrace)
@@ -21,7 +20,7 @@ import Network.HTTP.Types.Method (Method, StdMethod (..), methodConnect, methodD
 --
 -- >>> type Trace = Verb 'TRACE
 data Verb (method :: k1) (contents:: [k2])
-  deriving (Typeable, Generic)
+  deriving (Typeable)
 
 type GET = 'GET
 type Get = Verb GET

@@ -1,14 +1,18 @@
 -- | This module provides the 'Hreq' Monad which is an instance of
--- 'RunHttp' class and hence making it an HTTP client.
+-- 'RunClient' class and hence making it an HTTP client.
 --
 {-# LANGUAGE TupleSections #-}
 module Hreq.Client.Internal.HTTP
   ( -- * Hreq monad
     Hreq (..)
-  , RunHttp (..)
+  , RunClient (..)
     -- * Running Hreq
   , runHreq
   , runHreqWithConfig
+  , runHttpClient
+  , checkHttpResponse
+  , requestToHTTPRequest
+  , httpResponsetoResponse
   ) where
 
 import Prelude ()
@@ -28,8 +32,9 @@ import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Media (renderHeader)
 import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCode)
 
-import Hreq.Core.Http
 import Hreq.Client.Internal.Config
+import Hreq.Core.API (GivesPooper (..))
+import Hreq.Core.Client
 
 -- | Monad for running Http client requests
 newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }
@@ -38,29 +43,12 @@ newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }
 instance MonadUnliftIO m => MonadUnliftIO (Hreq m) where
   withRunInIO = wrappedWithRunInIO Hreq runHreq'
 
-instance RunHttp (Hreq IO) where
-  runHttp req = do
-    config <- ask
-
-    let manager = httpManager config
-    let mcookieJar = httpCookieJar config
-    let httpRequest = requestToHTTPRequest (httpBaseUrl config) req
-
-    ehttpResponse <- liftIO . catchConnectionError
-                       $ performHttpRequest httpRequest manager mcookieJar
-
-    response <- either throwHttpError (pure . httpResponsetoResponse) ehttpResponse
-
-    maybe (pure response) throwHttpError =<< checkResponse req response
+instance RunClient (Hreq IO) where
+  runClient = runHttpClient
 
   throwHttpError err = Hreq $ throwM err >>= return
 
-  checkResponse req response = do
-    statusRange <- asks httpStatuses
-    let code = statusCode $ resStatus response
-    pure $ if code >= statusLower statusRange && code <= statusUpper statusRange
-      then Just $ FailureResponse req response
-      else Nothing
+  checkResponse = checkHttpResponse
 
 runHreq :: MonadIO m => BaseUrl -> Hreq m a -> m a
 runHreq baseUrl action = do
@@ -70,6 +58,38 @@ runHreq baseUrl action = do
 
 runHreqWithConfig :: HttpConfig -> Hreq m a -> m a
 runHreqWithConfig config action = runReaderT (runHreq' action) config
+
+runHttpClient
+  :: (MonadReader HttpConfig m, MonadIO m, RunClient m)
+  => Request
+  -> m Response
+runHttpClient req = do
+  config <- ask
+
+  let manager = httpManager config
+  let baseUrl = httpBaseUrl config
+  let mcookieJar = httpCookieJar config
+
+  let httpRequest = requestToHTTPRequest baseUrl req
+
+  ehttpResponse <- liftIO . catchConnectionError
+                     $ performHttpRequest httpRequest manager mcookieJar
+
+  response <- either throwHttpError (pure . httpResponsetoResponse cs) ehttpResponse
+
+  maybe (pure response) throwHttpError =<< checkResponse req response
+
+checkHttpResponse
+  :: (MonadReader HttpConfig m)
+  => Request
+  -> Response
+  -> m (Maybe ClientError)
+checkHttpResponse req response = do
+  statusRange <- asks httpStatuses
+  let code = statusCode $ resStatus response
+  pure $ if code >= statusLower statusRange && code <= statusUpper statusRange
+    then Just $ FailureResponse req response
+    else Nothing
 
 -- * Helper functions
 performHttpRequest
@@ -92,7 +112,7 @@ performHttpRequest request manager mcookieJar = case mcookieJar of
         writeTVar cj newCookieJar
         pure newReq
 
-    -- updateWithResponseCookies code is borrowed from servant-client
+    -- updateWithResponseCookies code is borrowed from @servant-client@
     updateWithResponseCookies
       :: TVar HTTP.CookieJar
       -> HTTP.HistoriedResponse HTTP.BodyReader
@@ -111,11 +131,11 @@ performHttpRequest request manager mcookieJar = case mcookieJar of
           fReq = HTTP.hrFinalRequest responses
           fRes = HTTP.hrFinalResponse responses
 
-httpResponsetoResponse :: HTTP.Response LBS.ByteString -> Response
-httpResponsetoResponse response = Response
+httpResponsetoResponse :: (a -> b) -> HTTP.Response a -> ResponseF b
+httpResponsetoResponse f response = Response
  { resStatus = HTTP.responseStatus response
  , resHeaders = HTTP.responseHeaders response
- , resBody = cs $ HTTP.responseBody response
+ , resBody = f $ HTTP.responseBody response
  , resHttpVersion = HTTP.responseVersion response
  }
 
@@ -141,14 +161,21 @@ requestToHTTPRequest burl r = HTTP.defaultRequest
     (body, contentType) = case reqBody r of
       Nothing -> (HTTP.RequestBodyBS mempty, Nothing)
       Just (body', ctyp) ->
-        (HTTP.RequestBodyBS body', Just (hContentType, renderHeader ctyp))
+        let addBody = (, Just (hContentType, renderHeader ctyp))
+        in case body' of
+          RequestBodyBS bs ->
+            addBody $ HTTP.RequestBodyBS bs
+          RequestBodyLBS lbs ->
+            addBody $ HTTP.RequestBodyLBS lbs
+          RequestBodyStream (GivesPooper givesPooper) ->
+            addBody $ HTTP.RequestBodyStreamChunked givesPooper
 
     isSecure :: Bool
     isSecure = case baseUrlScheme burl of
         Http  -> False
         Https -> True
 
-catchConnectionError :: IO a -> IO (Either HttpError a)
+catchConnectionError :: IO a -> IO (Either ClientError a)
 catchConnectionError action =
   catch (Right <$> action)
     $ \e -> pure . Left . ConnectionError $ SomeException (e :: HTTP.HttpException)

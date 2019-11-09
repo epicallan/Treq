@@ -1,8 +1,8 @@
 cabal-version: >= 2.0
 name:           hreq-readme
 version:        0.0.1.0
-synopsis:       Test Hreq's readme file.
-description:    A Test Hreq's readme file.
+synopsis:       Tests Hreq's readme file.
+description:    Tests Hreq's readme file.
 homepage:       https://github.com/epicallan/hreq.git#readme
 bug-reports:    https://github.com/epicallan/hreq.git/issues
 author:         Lukwago Allan <epicallan.al@gmail>

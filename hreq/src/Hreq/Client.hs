@@ -71,7 +71,7 @@
 --
 -- >>> type PathsQuery = "user" :> "allan" :> GetJson User
 --
--- > pathsExample :: RunHttp m => m User
+-- > pathsExample :: RunClient m => m User
 --
 -- >>> pathsExample = hreq @PathsQuery Empty
 --
@@ -81,7 +81,7 @@
 --
 -- >>> type SingleParam = Param "name" String :> GetJson User
 --
--- > singleParamExample :: RunHttp m => m Response
+-- > singleParamExample :: RunClient m => m Response
 --
 -- >>> singleParamsExample =  hreq @SingleParam ("allan" :. Empty)
 --
@@ -92,7 +92,7 @@
 -- > -- Note MultiParams and MultiParamsList are the same.
 -- > -- Resulting URL is of the form http://example.com/api?name="allan"&age=20
 --
--- > multiParamsExample :: RunHttp m => m User
+-- > multiParamsExample :: RunClient m => m User
 --
 -- >>> multiParamsExample = hreq @MultiParams ("allan" :. 20 :. Empty)
 --
@@ -100,7 +100,7 @@
 --
 -- >>> type SingleQueryFlag = "user" :> QueryFlag "male" :> GetJson User
 --
--- > singleQueryFlag :: RunHttp m => m User
+-- > singleQueryFlag :: RunClient m => m User
 --
 -- >>> singleQueryFlag = hreq @SingleQueryFlag Empty
 --
@@ -112,7 +112,7 @@
 -- > -- The query flag values are inferred from provided type level strings (symbols)
 -- > -- Resulting URL is of the form http://example.com/api?male&old
 --
--- > multiFlagsExample :: RunHttp m => m User
+-- > multiFlagsExample :: RunClient m => m User
 --
 -- >>> multiFlagsExample = hreq @MultiQueryFlagList Empty
 --
@@ -128,7 +128,7 @@
 -- > -- Resulting URL is of the form http://example.com/users/allan/12
 -- > -- Note that MultiCapturesList is equal to MultiCaptures.
 --
--- > captureExample :: RunHttp m => m User
+-- > captureExample :: RunClient m => m User
 --
 -- >>> captureExample =  hreq @MultiCaptures $ UserName "allan" :. UserAge 12 :. Empty
 --
@@ -139,7 +139,7 @@
 --
 -- >>> type CaptureAllExample = "users" :> CaptureAll String :> GetJson User
 --
--- > captureAllExample :: RunHttp m => m User
+-- > captureAllExample :: RunClient m => m User
 --
 -- >>> captureAllExample = hreq @CaptureAllExample $ ["allan",  "alex", "brian"] :. Empty
 --
@@ -169,7 +169,7 @@
 --
 -- >>> type GetPlainText a = Get '[ResBody PlainText a]
 --
--- > plainTextResponse :: RunHttp m => m String
+-- > plainTextResponse :: RunClient m => m String
 --
 -- >>> plainTextResponse = hreq @("user" :> GetPlainText String) Empty
 --
@@ -177,7 +177,7 @@
 --
 -- >>> type MultiResultsQuery = Get '[ ResBody JSON User, ResHeaders '[ "key-header" := String ] ]
 --
--- > multiResults :: RunHttp m => m (Hlist '[ User, [Header] ])
+-- > multiResults :: RunClient m => m (Hlist '[ User, [Header] ])
 --
 -- >>> multiResults = hreq @MultiResultsQuery Empty
 --
@@ -185,7 +185,7 @@ module Hreq.Client
   ( -- * API
     module Hreq.Core.API
     -- * HTTP
-  , module Hreq.Core.Http
+  , module Hreq.Core.Client
 
    -- * Hreq
   , module Hreq.Client.Internal.HTTP
@@ -193,10 +193,10 @@ module Hreq.Client
   ) where
 
 import Hreq.Client.Internal.Config (HttpConfig (..), StatusRange (..), createDefConfig)
-import Hreq.Client.Internal.HTTP (Hreq (..), RunHttp (..), runHreq, runHreqWithConfig)
+import Hreq.Client.Internal.HTTP (Hreq (..), RunClient (..), runHreq, runHreqWithConfig)
 
 import Hreq.Core.API
-import Hreq.Core.Http
+import Hreq.Core.Client
 
 -- $setup
 -- >>> import Hreq.Core.API

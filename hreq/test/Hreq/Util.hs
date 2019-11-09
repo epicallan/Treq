@@ -20,30 +20,30 @@ data TestState =
   | DecodingErrorState
   | Default
 
-setClientRequest :: Request -> HttpPure state a -> HttpPure state a
+setClientRequest :: Request -> ClientPure state a -> ClientPure state a
 setClientRequest r h = case h of
-  RunHttp _ rs -> RunHttp r rs
+  RunClient _ rs -> RunClient r rs
   Throw e         -> Throw e
 
-instance RunHttp (HttpPure 'Default) where
-  runHttp req         = RunHttp req defaultResponse
+instance RunClient (ClientPure 'Default) where
+  runClient req         = RunClient req defaultResponse
   throwHttpError      = Throw
-  checkResponse req _ = RunHttp req Nothing
+  checkResponse req _ = RunClient req Nothing
 
-instance RunHttp (HttpPure 'FailureState) where
-  runHttp req         = Throw $ FailureResponse req defaultResponse
+instance RunClient (ClientPure 'FailureState) where
+  runClient req         = Throw $ FailureResponse req defaultResponse
   throwHttpError      = Throw
-  checkResponse req _ = RunHttp req Nothing
+  checkResponse req _ = RunClient req Nothing
 
-instance RunHttp (HttpPure 'DecodingErrorState) where
-  runHttp req         = RunHttp req (defaultResponse { resBody = "hey" })
+instance RunClient (ClientPure 'DecodingErrorState) where
+  runClient req         = RunClient req (defaultResponse { resBody = "hey" })
   throwHttpError      = Throw
-  checkResponse req _ = RunHttp req Nothing
+  checkResponse req _ = RunClient req Nothing
 
-runHttpPure
+runClientPure
   :: forall state a. (Show a, Eq a)
-  => BaseUrl -> HttpPure state a -> HttpPure state a
-runHttpPure _ httpClient = httpClient
+  => BaseUrl -> ClientPure state a -> ClientPure state a
+runClientPure _ httpClient = httpClient
 
 -- Test data
 data TestUser = TestUser

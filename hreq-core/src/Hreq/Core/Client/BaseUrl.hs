@@ -1,5 +1,5 @@
 -- | This module provides a safe way to construct API endpoint base URLs
-module Hreq.Core.Http.BaseUrl where
+module Hreq.Core.Client.BaseUrl where
 
 import Prelude ()
 import Prelude.Compat

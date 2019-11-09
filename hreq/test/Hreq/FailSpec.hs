@@ -1,6 +1,6 @@
 module Hreq.FailSpec (spec) where
 
-import Hreq.Util (TestState (..), TestUser, defaultResponse, runHttpPure)
+import Hreq.Util (TestState (..), TestUser, defaultResponse, runClientPure)
 import Hreq.Client
 import Test.Hspec
 
@@ -15,11 +15,11 @@ failSpec = do
     it "throw failure error" $ do
       let x = hreq @("hello" :> RawResponse GET) Empty
           req' = appendToPath "hello" defaultRequest
-      runHttpPure @'FailureState baseUrl x
+      runClientPure @'FailureState baseUrl x
         `shouldBe` Throw (FailureResponse req' defaultResponse)
 
     it "throws decoding failure error" $ do
       let x = hreq @(GetJson TestUser) Empty
 
-      show (runHttpPure @'DecodingErrorState baseUrl x)
+      show (runClientPure @'DecodingErrorState baseUrl x)
         `shouldContain` "DecodeFailure"

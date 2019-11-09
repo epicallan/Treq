@@ -10,6 +10,8 @@ module Hreq.Core.API
     , module Hreq.Core.API.Internal
       -- * MediaType
     , module Hreq.Core.API.MediaType
+       -- * Streaming
+    , module Hreq.Core.API.Streaming
       -- * TypeLevel
     , module Hreq.Core.API.TypeLevel
       -- * Verb
@@ -27,6 +29,7 @@ import Hreq.Core.API.Internal
 import Hreq.Core.API.MediaType
 import Hreq.Core.API.Request
 import Hreq.Core.API.Response
+import Hreq.Core.API.Streaming
 import Hreq.Core.API.TypeLevel
 import Hreq.Core.API.Verb
 import Network.HTTP.Types (Header, HeaderName, Status (..))

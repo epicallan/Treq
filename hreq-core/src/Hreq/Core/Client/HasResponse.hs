@@ -3,7 +3,7 @@
 --
 -- For instance @Verb GET '[]@ gets interpreted as an empty response of type Unit i.e @()@
 --
-module Hreq.Core.Http.HasResponse where
+module Hreq.Core.Client.HasResponse where
 
 import Control.Monad.Except
 import Data.Kind
@@ -16,13 +16,19 @@ import GHC.TypeLits
 import Network.HTTP.Types (hContentType)
 
 import Hreq.Core.API
-import Hreq.Core.Http.HttpError
-import Hreq.Core.Http.Response
+import Hreq.Core.Client.ClientError
+import Hreq.Core.Client.Response
 
-class MonadError HttpError m => HasResponse (a :: k) m where
+class MonadError ClientError m => HasResponse (a :: k) m where
    type HttpOutput a :: Type
 
    httpRes :: sing a -> Response -> m (HttpOutput a)
+
+-- instance (MonadError ClientError m ) => HasResponse '[] m where
+--   type HttpOutput (Stream method streamType) = (streamType -> IO ())
+
+--   httpRes = undefined
+
 
 instance
   ( UniqMembers rs "Response"
@@ -34,19 +40,25 @@ instance
 
   httpRes _ = httpRes (Proxy @rs)
 
-instance (MonadError HttpError m) => HasResponse '[] m where
+instance (MonadError ClientError m) => HasResponse '[] m where
   type HttpOutput '[] = ()
 
   httpRes _ _ = return ()
 
-instance {-# OVERLAPPING #-} (MonadError HttpError m)
+-- instance {-# OVERLAPPING #-} (MonadError ClientError m)
+--   => HasResponse '[ Stream a ] m where
+--   type HttpOutput '[ Stream a ] = a -> IO ()
+
+--   httpRes _ = return
+
+instance {-# OVERLAPPING #-} (MonadError ClientError m)
   => HasResponse '[ 'Raw a ] m where
   type HttpOutput '[ 'Raw a ] = Response
 
   httpRes _ = return
 
 instance {-# OVERLAPPING #-}
-  MonadError HttpError m
+  MonadError ClientError m
   => HasResponse ('Raw a : r : rs) m where
 
   type HttpOutput ('Raw a : r : rs) =
@@ -56,7 +68,7 @@ instance {-# OVERLAPPING #-}
 
 instance {-# OVERLAPPING #-}
   ( MediaDecode ctyp a
-  , MonadError HttpError m
+  , MonadError ClientError m
   )
   => HasResponse '[ 'ResBody  ctyp a ] m where
   type HttpOutput '[ 'ResBody ctyp a ] = a
@@ -67,7 +79,7 @@ instance {-# OVERLAPPING #-}
 -- overlapping type family instance error.
 instance {-# OVERLAPPING #-}
   ( MediaDecode ctyp a
-  , MonadError HttpError m
+  , MonadError ClientError m
   , SingI ('Res (r ': rs))
   , HttpResConstraints (r ': rs)
   ) => HasResponse ( 'ResBody ctyp a ': r ': rs ) m where
@@ -80,7 +92,7 @@ instance {-# OVERLAPPING #-}
 
 
 instance {-# OVERLAPPING #-}
-  ( MonadError HttpError m
+  ( MonadError ClientError m
   , SingI ('Res ('ResHeaders hs ': rs))
   , HttpResConstraints ('ResHeaders hs ': rs)
   ) => HasResponse ('ResHeaders hs ': rs) m where
@@ -91,7 +103,7 @@ instance {-# OVERLAPPING #-}
 
 decodeAsBody
   :: forall ctyp a m sing
-  . (MonadError HttpError m, MediaDecode ctyp a)
+  . (MonadError ClientError m, MediaDecode ctyp a)
   => sing ctyp
   -> Response
   -> m a
@@ -117,7 +129,7 @@ decodeAsBody _ response = do
       Just t  -> maybe (throwError $ InvalidContentTypeHeader response) return $ parseAccept t
 
 decodeAsHlist
-  :: (MonadError HttpError m, HttpResConstraints rs)
+  :: (MonadError ClientError m, HttpResConstraints rs)
   => Sing rs
   -> Response
   -> m (Hlist (HttpRes rs))
@@ -141,3 +153,4 @@ decodeAsHlist srs response = case srs of
   -- that triggers a type error when 'Raw' is in a non-singleton
   -- type level list
   (SCons (SRaw _) _xs)-> error "GHC Error"
+  (SCons (SResStream _) _xs)-> error "GHC Error"

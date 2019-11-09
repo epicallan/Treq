@@ -2,7 +2,7 @@
 -- a 'ReqContent' type level list into 'Request' data
 --
 {-# LANGUAGE PatternSynonyms      #-}
-module Hreq.Core.Http.HasRequest where
+module Hreq.Core.Client.HasRequest where
 
 import Prelude ()
 import Prelude.Compat
@@ -19,8 +19,8 @@ import qualified Data.Text as T (concat)
 import Web.HttpApiData (ToHttpApiData (..))
 
 import Hreq.Core.API
-import Hreq.Core.Http.Request
-import Hreq.Core.Http.BasicAuth
+import Hreq.Core.Client.Request
+import Hreq.Core.Client.BasicAuth
 import Network.HTTP.Types (QueryItem)
 
 pattern Empty :: Hlist '[]
@@ -70,7 +70,10 @@ getAcceptHeader = \case
   SCons (SResBody sctyp _a) _rs -> Just $ mediaType sctyp
   SCons (SRaw _) rs -> getAcceptHeader rs
   SCons (SResHeaders _) rs -> getAcceptHeader rs
+  SCons (SResStream _) _rs -> Just $ mediaType (Proxy @OctetStream)
 
+-- | TODO: instead of a big case statement we can have multiple calls
+-- of the same function.
 encodeHlistAsReq
   :: forall (ts :: [ReqContent Type]). (HttpReqConstraints ts)
   => Sing ts
@@ -127,9 +130,14 @@ encodeHlistAsReq xs input req = case (xs, input) of
        $ appendQueryFlags (toQueryFlags sflags) req
 
   (SCons (SReqBody sctyp _sa) sxs, y :. ys)                    ->
-     let req' = setReqBody (mediaEncode sctyp y) (mediaType sctyp) req
+     let body = RequestBodyBS $ mediaEncode sctyp y
+         req' = setReqBody body (mediaType sctyp) req
      in encodeHlistAsReq sxs ys req'
 
+  (SCons (SStreamBody sctyp _sa) sxs, y :. ys)                 ->
+     let body = RequestBodyStream $ givePopper y
+         req' = setReqBody body (mediaType sctyp) req
+     in encodeHlistAsReq sxs ys req'
 
 {-------------------------------------------------------------------------------
   Helper functions

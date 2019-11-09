@@ -17,6 +17,7 @@ import Control.Exception (Exception)
 import Data.Aeson (FromJSON, ToJSON, eitherDecodeStrict, encode)
 import Data.Bifunctor (first)
 import Data.ByteString (ByteString)
+import qualified Data.ByteString.Lazy as LBS
 import qualified Data.List.NonEmpty as NE
 import Data.String.Conversions (cs)
 import Data.Text (Text)
@@ -28,6 +29,7 @@ import Web.FormUrlEncoded (FromForm, ToForm, urlDecodeAsForm, urlEncodeAsForm)
 -- * Provided Content types
 data JSON deriving Typeable
 data PlainText deriving Typeable
+data OctetStream deriving Typeable
 data FormUrlEncoded deriving Typeable
 
 newtype DecodeError = DecodeError { unDecodeError :: Text }
@@ -57,8 +59,12 @@ instance HasMediaType PlainText where
 instance HasMediaType FormUrlEncoded where
   mediaType _ = "application" // "x-www-form-urlencoded"
 
+instance HasMediaType OctetStream where
+  mediaType _ = "application" // "octet-stream"
+
 class HasMediaType ctyp => MediaDecode ctyp a where
   mediaDecode :: sing ctyp -> ByteString -> Either DecodeError a
+  -- TODO: examine whether Lazy ByteString is better.
 
 class HasMediaType ctyp => MediaEncode ctyp a where
   mediaEncode :: sing ctyp -> a -> ByteString
@@ -68,6 +74,18 @@ instance FromJSON a => MediaDecode JSON a where
 
 instance ToJSON a => MediaEncode JSON a where
   mediaEncode _ = cs . encode
+
+instance MediaDecode OctetStream ByteString where
+  mediaDecode _ = Right . id
+
+instance MediaDecode OctetStream LBS.ByteString where
+  mediaDecode _ = Right . cs
+
+instance MediaEncode OctetStream ByteString where
+  mediaEncode _ = id
+
+instance MediaEncode OctetStream LBS.ByteString where
+  mediaEncode _ = cs
 
 instance MediaDecode PlainText Text where
   mediaDecode _ = Right . cs

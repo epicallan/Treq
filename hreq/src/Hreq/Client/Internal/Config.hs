@@ -14,7 +14,7 @@ import qualified Network.HTTP.Client as C
 import qualified Network.HTTP.Client.TLS as TLS
 
 import Hreq.Core.API (StatusCode)
-import Hreq.Core.Http
+import Hreq.Core.Client
 
 -- | Valid Response status code range
 data StatusRange = StatusRange

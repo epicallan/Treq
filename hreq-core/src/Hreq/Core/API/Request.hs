@@ -16,6 +16,7 @@ data ReqContent a =
     | BasicAuth a Symbol
     | CaptureAll a
     | ReqBody a a
+    | StreamBody a a
     | ReqHeaders [(Symbol, a)]
 
 -- * Request Type Synonyms
@@ -23,6 +24,7 @@ type Captures = 'Captures
 type QueryFlags = 'QueryFlags ()
 type Params = 'Params
 type ReqBody = 'ReqBody
+type StreamBody = 'StreamBody
 type ReqHeaders = 'ReqHeaders
 type CaptureAll = 'CaptureAll
 type BasicAuth = 'BasicAuth ()
@@ -38,6 +40,7 @@ data SReqContent (a :: ReqContent Type)
   | forall b . a ~ 'CaptureAll b => SCaptureAll (Sing b)
   | forall ts . a ~ 'Captures ts => SCaptures (Sing ts)
   | forall ctyp b . a ~ 'ReqBody ctyp b => SReqBody (Sing ctyp) (Sing b)
+  | forall ctyp b . a ~ 'StreamBody ctyp b => SStreamBody (Sing ctyp) (Sing b)
   | forall ts . a ~ ReqHeaders ts => SReqHeaders (Sing ts)
   | forall ts . a ~ Params ts => SParams (Sing ts)
   | forall b s . a ~ 'BasicAuth b s => SBasicAuth (Sing b) (Sing s)
@@ -64,6 +67,9 @@ instance (SingI a) => SingI ('CaptureAll a :: ReqContent Type) where
 
 instance (SingI a, SingI ctyp) => SingI ('ReqBody ctyp a :: ReqContent Type) where
   sing = SReqBody sing sing
+
+instance (SingI a, SingI ctyp) => SingI ('StreamBody ctyp a :: ReqContent Type) where
+  sing = SStreamBody sing sing
 
 instance SingI a => SingI ('ReqHeaders a :: ReqContent Type) where
   sing = SReqHeaders sing

@@ -8,11 +8,11 @@
 
 Hreq is a high-level easy to use type-driven HTTP client library inspired by Servant-Client. Hreq provides an alternative approach to type-safe construction and interpretation of API endpoints for Http client requests.
 
-The Hreq github repository is a mono-repo composed of [hreq-core](https://github.com/epicallan/hreq/tree/master/hreq-core) implementing core functionality and [hreq](https://github.com/epicallan/hreq/tree/master/hreq), which uses this functionality as an HTTP client monad.
+The Hreq github repository is a mono-repo composed of [hreq-core](https://github.com/epicallan/hreq/tree/master/hreq-core) implementing core functionality and [hreq](https://github.com/epicallan/hreq/tree/master/hreq), which uses this functionality as an HTTP client monad transformer.
 
 ### Checkout accompanying blog post for more details
 
-* [HTTP Requests with Hreq](https://lukwagoallan.com/posts/http-requests-with-hreq)
+* HTTP Requests with Hreq -- TODO: add link
 
 ##  Motivation
 
@@ -69,10 +69,10 @@ main' = do
     newUser :: User
     newUser = User "Allan" 29
 
-createUser :: RunHttp m => User -> m User
+createUser :: RunClient m => User -> m User
 createUser user = hreq @(JsonBody User :> PostJson User) (user :. Empty)
 
-getUserByName :: RunHttp m => String -> m User
+getUserByName :: RunClient m => String -> m User
 getUserByName userName = hreq @(Capture String :> GetJson User) (userName :. Empty)
 
 ```

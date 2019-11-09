@@ -71,4 +71,4 @@ hreqStream
 hreqStream _ reqInput f = do
   let req = httpReq (Proxy @v) (Proxy @ts) reqInput defaultRequest
 
-  withStreamingClient req $ ( \stream -> liftIO (f stream))
+  withStreamingClient req (liftIO . f)

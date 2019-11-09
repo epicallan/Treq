@@ -3,13 +3,10 @@
 module Hreq.Core.API.Streaming where
 
 import Data.ByteString (ByteString)
-import Data.Kind (Type)
 import Hreq.Core.API.Response
 import Hreq.Core.API.Verb
 
 -- * Client Streaming
-
-data Stream (a :: Type)
 
 -- | A StreamVerb endpoint receives a stream of encoded values at the
 type StreamVerb method a = Verb method '[ 'ResStream a ]
@@ -21,12 +18,19 @@ type StreamPut a = StreamVerb PUT a
 
 -- * Request Body streaming
 
--- | A function which has a call back that provides successive chunks of a request body.
+-- | A function which generates successive chunks of a request body,
+-- provider a single empty bytestring when no more data is available.
+type Pooper = IO ByteString
+
+-- | A function which must be provided with a Popper.
+type NeedsPooper a = Pooper -> IO a
+
+-- | A datatype containing a function which will provide a 'Popper' to a 'NeedsPopper'. .
 newtype GivesPooper a
-  = GivesPooper { runGivesPooper :: (IO ByteString -> IO a) -> IO a }
+  = GivesPooper { runGivesPooper ::  NeedsPooper a -> IO a }
 
 instance Show (GivesPooper a) where
-  show _ = "GivesPooper"
+  show _ = "GivesPooper IO"
 
 instance Eq (GivesPooper a) where
   _ == _ = False

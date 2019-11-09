@@ -36,7 +36,7 @@ instance MonadUnliftIO m => MonadUnliftIO (Hreq m) where
 instance RunClient (Hreq IO) where
   runClient = runHttpClient
 
-  throwHttpError err = Hreq $ throwM err >>= return
+  throwHttpError = Hreq . throwM
 
   checkResponse = checkHttpResponse
 

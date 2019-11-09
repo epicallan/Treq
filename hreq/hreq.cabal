@@ -88,6 +88,7 @@ test-suite spec
     , http-types >= 0.12.3 && < 0.13
     , hspec      >= 2.6.0  && < 2.8
     , hreq
+    , hreq-core
   main-is:             Spec.hs
   hs-source-dirs:      test
   type:                exitcode-stdio-1.0

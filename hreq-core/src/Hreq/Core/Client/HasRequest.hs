@@ -16,7 +16,6 @@ import Data.String (fromString)
 import Data.String.Conversions (cs)
 import Data.List (intersperse)
 import qualified Data.Text as T (concat)
-import Web.HttpApiData (ToHttpApiData (..))
 
 import Hreq.Core.API
 import Hreq.Core.Client.Request

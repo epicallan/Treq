@@ -27,7 +27,7 @@ install:
 script:
   - cabal new-test all
   # HLint check
-  - curl -sSL https://raw.github.com/ndmitchell/neil/master/misc/travis.sh | sh -s -- hlint -XTypeApplications hreq/src/ hreq-core/src/
+  - curl -sSL https://raw.github.com/ndmitchell/neil/master/misc/travis.sh | sh -s -- hlint -XTypeApplications hreq/src/ hreq-core/src/ hreq-conduit/src/
 
 notifications:
   email: false

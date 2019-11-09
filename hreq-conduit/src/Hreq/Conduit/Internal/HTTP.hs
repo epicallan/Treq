@@ -6,10 +6,6 @@ module Hreq.Conduit.Internal.HTTP
   , hreq
   , hreqConduit
   ) where
-
-import Prelude ()
-import Prelude.Compat
-
 import Control.Monad
 import Control.Monad.Catch (throwM)
 import Control.Monad.IO.Class (MonadIO (..))

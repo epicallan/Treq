@@ -42,4 +42,5 @@ srcToPopperIO src f = do
   f popper
 
 -- $setup
+-- >>> import Hreq.Core.API
 -- >>> import Hreq.Conduit.Internal.StreamBody

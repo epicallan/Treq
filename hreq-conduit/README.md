@@ -35,6 +35,7 @@ runHttpBin action = runHreq baseUrl action
   where
     baseUrl = HttpsDomain "httpbin.org"
 
+-- | Stream data from an endpoint and write it into a temporary file
 streamResponse :: RunConduitClient m => m ()
 streamResponse =
   hreqWithConduit
@@ -44,6 +45,7 @@ streamResponse =
   where
     size = 3 * 1024 * 1024 -- amount of data to stream in MBs
 
+-- | stream data from a file and send it as a Request body stream over the network.
 streamFile :: String -> IO Response
 streamFile fp =
   withSourceFile fp $

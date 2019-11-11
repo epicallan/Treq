@@ -12,7 +12,7 @@ The Hreq github repository is a mono-repo composed of the following:
 
 - [hreq-core](https://github.com/epicallan/hreq/tree/master/hreq-core) implementing core functionality.
 
-- [hreq-client](https://github.com/epicallan/hreq/tree/master/hreq) an HTTP client using hreq-core functionality
+- [hreq-client](https://github.com/epicallan/hreq/tree/master/hreq-client) an HTTP client using hreq-core functionality
 
 - [hreq-conduit](https://github.com/epicallan/hreq/tree/master/hreq-conduit) an HTTP client with streaming support via conduit.
 
@@ -35,7 +35,7 @@ I envisioned Hreq as the best possible compromise of both worlds.
 
  - In Hreq, API Request component arguments are provided to the API function through a Heterogeneous list.
 
- - Hreq supports the concept of having a Retry policy, whereby an http request is retried automatically based on set Retry policy.
+ - Hreq supports the concept of having a Retry policy, whereby an http request is retried automatically based on a set Retry policy.
 
 ## Usage Example
 
@@ -66,7 +66,7 @@ main' = do
     createdUser <- createUser newUser
     -- | Makes Get Request with "allan" as a URL fragment
     myUser      <- getUserByName "allan"
-    -- | makes a Get Request returning a list of Users
+    -- | Makes a Get Request returning a list of Users
     allUsers    <- hreq @(GetJson [User]) Empty
     return (createdUser, myUser, allUsers)
   print res

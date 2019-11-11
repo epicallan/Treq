@@ -23,7 +23,7 @@ test-suite readme
   build-depends:
       base  >= 4.10.1 && < 5
     , aeson >= 1.4.5 && < 1.5
-    , hreq  >= 0.0.1
+    , hreq-client
   main-is:             README.lhs
   type:                exitcode-stdio-1.0
   ghc-options:         -pgmL markdown-unlit -Wall -threaded

@@ -17,7 +17,13 @@ tested-with:
     ||  ==8.4.4
     ||  ==8.6.5
     ||  ==8.8.1
-build-type: Simple
+build-type: Custom
+
+custom-setup
+ setup-depends:
+   base >= 4 && <5,
+   Cabal,
+   cabal-doctest >= 1 && <1.1
 
 source-repository head
   type: git
@@ -78,3 +84,31 @@ test-suite spec
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns
   build-tool-depends:
     hspec-discover:hspec-discover >= 2.6.0 && <2.8
+
+test-suite readme
+  build-depends:
+      base              >= 4.10.1 && < 5
+    , conduit           >=1.3.1   && <1.4
+    , bytestring        >= 0.10.8 && < 0.11
+    , hreq-conduit
+    , string-conversions >= 0.4.0 && < 0.5
+    , text               >= 1.2.4 && < 1.3
+
+  main-is:             README.lhs
+  type:                exitcode-stdio-1.0
+  ghc-options:         -pgmL markdown-unlit -Wall -threaded
+  build-tool-depends:  markdown-unlit:markdown-unlit
+  default-language:    Haskell2010
+
+test-suite doctests
+  type:             exitcode-stdio-1.0
+  main-is:          DocTests.hs
+  build-depends:
+      base       >= 4.10.1 && < 5
+    , aeson      >= 1.4.5 && < 1.5
+    , doctest    >=0.15 && < 0.17
+    , hreq-conduit
+
+  ghc-options:      -Wall -threaded
+  hs-source-dirs:   test
+  default-language: Haskell2010

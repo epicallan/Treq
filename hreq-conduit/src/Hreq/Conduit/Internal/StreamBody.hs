@@ -40,3 +40,6 @@ srcToPopperIO src f = do
               | B.null bs -> popper
               | otherwise -> return bs
   f popper
+
+-- $setup
+-- >>> import Hreq.Conduit.Internal.StreamBody

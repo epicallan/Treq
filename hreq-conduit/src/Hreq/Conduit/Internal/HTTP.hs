@@ -99,7 +99,6 @@ hreqWithConduit
 hreqWithConduit input f =
   hreqStream (Proxy @api) input $ \ (ResBodyStream conduit) -> f conduit
 
-
 bodyReaderSource :: MonadIO m => HTTP.BodyReader -> ConduitT i ByteString m ()
 bodyReaderSource br = go
   where

@@ -8,7 +8,13 @@
 
 Hreq is a high-level easy to use type-driven HTTP client library inspired by Servant-Client. Hreq provides an alternative approach to type-safe construction and interpretation of API endpoints for Http client requests.
 
-The Hreq github repository is a mono-repo composed of [hreq-core](https://github.com/epicallan/hreq/tree/master/hreq-core) implementing core functionality and [hreq](https://github.com/epicallan/hreq/tree/master/hreq), which uses this functionality as an HTTP client monad transformer.
+The Hreq github repository is a mono-repo composed of the following:
+
+- [hreq-core](https://github.com/epicallan/hreq/tree/master/hreq-core) implementing core functionality.
+
+- [hreq-client](https://github.com/epicallan/hreq/tree/master/hreq) an HTTP client using hreq-core functionality
+
+- [hreq-conduit](https://github.com/epicallan/hreq/tree/master/hreq-conduit) an HTTP client with streaming support via conduit.
 
 ### Checkout accompanying blog post for more details
 
@@ -28,8 +34,8 @@ I envisioned Hreq as the best possible compromise of both worlds.
  - In Hreq, API types are used directly within API functions via Type Application while in servant-client API types create new API functions for creating API requests.
 
  - In Hreq, API Request component arguments are provided to the API function through a Heterogeneous list.
- 
- - Hreq supports the concept of Retry policy, where a request is retried per set retry policy on failure. 
+
+ - Hreq supports the concept of having a Retry policy, whereby an http request is retried automatically based on set Retry policy.
 
 ## Usage Example
 

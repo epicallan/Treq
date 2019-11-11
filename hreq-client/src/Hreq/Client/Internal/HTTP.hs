@@ -10,9 +10,12 @@ module Hreq.Client.Internal.HTTP
   , runHreq
   , runHreqWithConfig
   , runHttpClient
+    -- * Helper functions
   , checkHttpResponse
   , requestToHTTPRequest
   , httpResponsetoResponse
+  , catchConnectionError
+  , isLeft
   ) where
 
 import Prelude ()
@@ -23,14 +26,16 @@ import Control.Monad.Catch (SomeException (..), catch, throwM)
 import Control.Monad.IO.Unlift (MonadUnliftIO (..), wrappedWithRunInIO)
 import Control.Monad.Reader (MonadIO (..), MonadReader, MonadTrans, ReaderT (..), ask, asks)
 import Control.Monad.STM (STM, atomically)
+import Control.Retry (retrying)
 import qualified Data.ByteString.Lazy as LBS
 import Data.Foldable (toList)
 import Data.Maybe (maybeToList)
 import Data.String.Conversions (cs)
 import Data.Time.Clock (UTCTime, getCurrentTime)
+import GHC.Natural (Natural)
 import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Media (renderHeader)
-import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCode)
+import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCode, statusMessage)
 
 import Hreq.Client.Internal.Config
 import Hreq.Core.API (GivesPooper (..))
@@ -69,11 +74,14 @@ runHttpClient req = do
   let manager = httpManager config
   let baseUrl = httpBaseUrl config
   let mcookieJar = httpCookieJar config
+  let retryPolicy = httpRetryPolicy config
 
   let httpRequest = requestToHTTPRequest baseUrl req
 
-  ehttpResponse <- liftIO . catchConnectionError
-                     $ performHttpRequest httpRequest manager mcookieJar
+  let requestAction = liftIO $ catchConnectionError
+        $ performHttpRequest httpRequest manager mcookieJar
+
+  ehttpResponse <- retrying retryPolicy (const (return . isLeft) ) (const requestAction)
 
   response <- either throwHttpError (pure . httpResponsetoResponse cs) ehttpResponse
 
@@ -86,7 +94,7 @@ checkHttpResponse
   -> m (Maybe ClientError)
 checkHttpResponse req response = do
   statusRange <- asks httpStatuses
-  let code = statusCode $ resStatus response
+  let code = resStatusCode response
   pure $ if code >= statusLower statusRange && code <= statusUpper statusRange
     then Just $ FailureResponse req response
     else Nothing
@@ -133,7 +141,8 @@ performHttpRequest request manager mcookieJar = case mcookieJar of
 
 httpResponsetoResponse :: (a -> b) -> HTTP.Response a -> ResponseF b
 httpResponsetoResponse f response = Response
- { resStatus = HTTP.responseStatus response
+ { resStatusCode = statusCode $ HTTP.responseStatus response
+ , resStatusMsg = cs $ statusMessage $ HTTP.responseStatus response
  , resHeaders = HTTP.responseHeaders response
  , resBody = f $ HTTP.responseBody response
  , resHttpVersion = HTTP.responseVersion response
@@ -143,7 +152,7 @@ requestToHTTPRequest :: BaseUrl -> Request -> HTTP.Request
 requestToHTTPRequest burl r = HTTP.defaultRequest
     { HTTP.method = reqMethod r
     , HTTP.host = cs $ baseUrlHost burl
-    , HTTP.port = baseUrlPort burl
+    , HTTP.port = fromIntegral @Natural @Int $ baseUrlPort burl
     , HTTP.path = cs $ baseUrlPath burl <> reqPath r
     , HTTP.queryString = renderQuery True $ toList $ reqQueryString r
     , HTTP.requestHeaders = maybeToList acceptHeader <> maybeToList contentType <> headers
@@ -179,3 +188,8 @@ catchConnectionError :: IO a -> IO (Either ClientError a)
 catchConnectionError action =
   catch (Right <$> action)
     $ \e -> pure . Left . ConnectionError $ SomeException (e :: HTTP.HttpException)
+
+isLeft :: Either a b -> Bool
+isLeft x = case x of
+   Left _  -> True
+   Right _ -> False

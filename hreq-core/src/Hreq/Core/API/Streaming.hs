@@ -3,18 +3,20 @@
 module Hreq.Core.API.Streaming where
 
 import Data.ByteString (ByteString)
+import Hreq.Core.API.MediaType
 import Hreq.Core.API.Response
 import Hreq.Core.API.Verb
 
 -- * Client Streaming
 
--- | A StreamVerb endpoint receives a stream of encoded values at the
-type StreamVerb method a = Verb method '[ 'ResStream a ]
+-- | A StreamVerb endpoint receives a stream of encoded values
+-- with the OctetStream content type.
+type StreamVerb method = Verb method '[ 'ResStream OctetStream () ]
 
 -- * Stream synonyms
-type StreamGet a = StreamVerb GET a
-type StreamPost a = StreamVerb POST a
-type StreamPut a = StreamVerb PUT a
+type StreamGet = StreamVerb GET
+type StreamPost = StreamVerb POST
+type StreamPut = StreamVerb PUT
 
 -- * Request Body streaming
 

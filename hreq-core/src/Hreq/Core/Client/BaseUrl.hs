@@ -1,4 +1,5 @@
 -- | This module provides a safe way to construct API endpoint base URLs
+{-# LANGUAGE PatternSynonyms #-}
 module Hreq.Core.Client.BaseUrl where
 
 import Prelude ()
@@ -7,6 +8,7 @@ import Prelude.Compat
 import Data.String.Conversions (cs)
 import Data.Text (Text)
 import qualified Data.Text as T
+import GHC.Natural (Natural)
 
 data Scheme =
     Http
@@ -15,11 +17,23 @@ data Scheme =
 
 -- | Simple data type to represent the target of HTTP requests
 data BaseUrl = BaseUrl
-  { baseUrlScheme :: Scheme -- ^ URI scheme to use
-  , baseUrlHost   :: Text   -- ^ host (eg "haskell.org")
-  , baseUrlPort   :: Int    -- ^ port (eg 80)
-  , baseUrlPath   :: Text   -- ^ path (eg "/a/b/c")
+  { baseUrlScheme :: Scheme   -- ^ URI scheme to use
+  , baseUrlHost   :: Text     -- ^ host (eg "haskell.org")
+  , baseUrlPort   :: Natural  -- ^ port (eg 80)
+  , baseUrlPath   :: Text     -- ^ path (eg "/a/b/c")
   } deriving (Show, Eq, Ord)
+
+pattern HttpDomain :: Text -> BaseUrl
+pattern HttpDomain host = BaseUrl Http host 80 ""
+
+pattern HttpUrl :: Text -> Text -> BaseUrl
+pattern HttpUrl host path = BaseUrl Http host 80 path
+
+pattern HttpsDomain :: Text -> BaseUrl
+pattern HttpsDomain host = BaseUrl Https host 443 ""
+
+pattern HttpsUrl :: Text -> Text -> BaseUrl
+pattern HttpsUrl host path = BaseUrl Https host 443 path
 
 showBaseUrl :: BaseUrl -> Text
 showBaseUrl (BaseUrl urlscheme host port path) =

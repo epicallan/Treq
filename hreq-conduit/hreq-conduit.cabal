@@ -38,10 +38,11 @@ library
     exceptions           >= 0.10.0 && < 0.11,
     http-client          >= 0.6.4 && < 0.7,
     http-types           >= 0.12.3 && < 0.13,
-    hreq                 >= 0.0.1,
+    hreq-client          >= 0.0.1,
     hreq-core            >= 0.0.1,
     conduit              >=1.3.1   && <1.4,
     mtl                  >= 2.2.2 && < 3.0,
+    retry                >= 0.8   && < 0.9,
     unliftio-core        >= 0.1.2 && < 0.2.0
 
   ghc-options:
@@ -57,3 +58,23 @@ library
 
   hs-source-dirs: src
   default-language: Haskell2010
+
+test-suite spec
+
+  build-depends:
+      base               >= 4.10.1 && < 5
+    , conduit            >=1.3.1   && <1.4
+    , http-types         >= 0.12.3 && < 0.13
+    , hspec              >= 2.6.0  && < 2.8
+    , hreq-conduit
+    , string-conversions >= 0.4.0 && < 0.5
+    , text               >= 1.2.4 && < 1.3
+  main-is:             Spec.hs
+  other-modules: Hreq.HttpBin.SuccessSpec
+  hs-source-dirs:      test
+  type:                exitcode-stdio-1.0
+  ghc-options:         -Wall -threaded
+  default-language:    Haskell2010
+  default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns
+  build-tool-depends:
+    hspec-discover:hspec-discover >= 2.6.0 && <2.8

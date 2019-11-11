@@ -24,7 +24,7 @@ main = do
     return (x, y)
   print res
   where
-    baseUrl = BaseUrl Http "trequest.free.beeceptor.com" 80 "hello"
+    baseUrl = HttpsUrl "trequest.free.beeceptor.com" "hello"
 
 user :: User
 user = User "Allan" 29

@@ -1,5 +1,5 @@
 packages:
   ./
-  hreq/
+  hreq-client/
   hreq-core/
   hreq-conduit/

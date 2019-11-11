@@ -1,6 +1,4 @@
-module Hreq.Conduit.Internal.StreamBody
-  ( ReqBodySource (..)
-  ) where
+module Hreq.Conduit.Internal.StreamBody where
 
 import Data.ByteString
 import qualified Data.ByteString as B
@@ -9,7 +7,17 @@ import Data.IORef
 import Hreq.Core.API
 import qualified Network.HTTP.Client as HTTP
 
-newtype ReqBodySource = ReqBodySource (ConduitT () ByteString IO ())
+-- | The conduit type representing a streaming request body.
+type BodyConduit = ConduitT () ByteString IO ()
+
+-- | The Request body Stream is treated as a chucked body stream 'HTTP.RequestBodyStreamChunked'.
+-- Ensure your server supports chucked body stream.
+newtype ReqBodySource = ReqBodySource BodyConduit
+
+-- | For use in API endpoint type definition
+-- >>> "post" :> ConduitReqBody :> RawResponse POST
+--
+type ConduitReqBody = StreamBody OctetStream ReqBodySource
 
 instance HasStreamBody ReqBodySource where
   givePopper (ReqBodySource src)= GivesPooper $ srcToPopperIO src
@@ -17,7 +25,7 @@ instance HasStreamBody ReqBodySource where
 -- * Helpers
 
 -- | This is taken from "Network.HTTP.Client.Conduit" without modifications.
-srcToPopperIO :: ConduitT () ByteString IO () -> HTTP.GivesPopper ()
+srcToPopperIO :: BodyConduit -> HTTP.GivesPopper ()
 srcToPopperIO src f = do
   (rsrc0, ()) <- src $$+ return ()
   irsrc <- newIORef rsrc0

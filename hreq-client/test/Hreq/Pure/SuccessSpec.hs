@@ -1,4 +1,4 @@
-module Hreq.SuccessSpec (spec) where
+module Hreq.Pure.SuccessSpec (spec) where
 
 import Data.Proxy
 import Test.Hspec
@@ -6,7 +6,7 @@ import Test.Hspec
 import Data.Foldable
 import Hreq.Client
 import Hreq.Core.Client (RequestBody (..))
-import Hreq.Util (TestState (..), TestUser (..), defaultResponse, runClientPure)
+import Hreq.Pure.Util (TestState (..), TestUser (..), defaultResponse, runClientPure)
 
 spec :: Spec
 spec = describe "Hreq.SuccessSpec" successSpec
@@ -16,7 +16,7 @@ testUser = TestUser "Allan" 29
 
 successSpec :: Spec
 successSpec = do
-  let baseUrl = BaseUrl Http "example.com" 80 ""
+  let baseUrl = HttpDomain "example.com"
       runClientPure' = runClientPure @'Default
 
   describe "Works with request components" $ do

@@ -69,7 +69,7 @@ getAcceptHeader = \case
   SCons (SResBody sctyp _a) _rs -> Just $ mediaType sctyp
   SCons (SRaw _) rs -> getAcceptHeader rs
   SCons (SResHeaders _) rs -> getAcceptHeader rs
-  SCons (SResStream _) _rs -> Just $ mediaType (Proxy @OctetStream)
+  SCons (SResStream sctyp _) _rs -> Just $ mediaType sctyp
 
 -- | TODO: instead of a big case statement we can have multiple calls
 -- of the same function.

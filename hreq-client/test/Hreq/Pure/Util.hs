@@ -1,15 +1,16 @@
 {-# LANGUAGE DeriveAnyClass #-}
-module Hreq.Util where
+module Hreq.Pure.Util where
 
 import Data.Aeson
 import GHC.Generics
 
 import Hreq.Client
-import Network.HTTP.Types (hContentType, http11, status200)
+import Network.HTTP.Types (hContentType, http11)
 
 defaultResponse :: Response
 defaultResponse = Response
- { resStatus = status200
+ { resStatusCode = 200
+ , resStatusMsg = "Ok"
  , resHeaders = [(hContentType, "application/json")]
  , resHttpVersion = http11
  , resBody = "{\"name\":\"Allan\",\"age\":29}"
@@ -23,7 +24,7 @@ data TestState =
 setClientRequest :: Request -> ClientPure state a -> ClientPure state a
 setClientRequest r h = case h of
   RunClient _ rs -> RunClient r rs
-  Throw e         -> Throw e
+  Throw e        -> Throw e
 
 instance RunClient (ClientPure 'Default) where
   runClient req         = RunClient req defaultResponse

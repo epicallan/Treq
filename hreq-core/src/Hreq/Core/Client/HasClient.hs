@@ -36,7 +36,7 @@ hreq'
 hreq' _ reqInput = do
   let req = httpReq (Proxy @v) (Proxy @ts) reqInput defaultRequest
 
-  clientResponse <- runClient $! req
+  clientResponse <- runClient req
 
   lift' $ httpRes (Proxy @v) $! clientResponse
   where

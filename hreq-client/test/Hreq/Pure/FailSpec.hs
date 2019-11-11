@@ -1,7 +1,7 @@
-module Hreq.FailSpec (spec) where
+module Hreq.Pure.FailSpec (spec) where
 
-import Hreq.Util (TestState (..), TestUser, defaultResponse, runClientPure)
 import Hreq.Client
+import Hreq.Pure.Util (TestState (..), TestUser, defaultResponse, runClientPure)
 import Test.Hspec
 
 spec :: Spec
@@ -9,7 +9,7 @@ spec = describe "Hreq.FailSpec" failSpec
 
 failSpec :: Spec
 failSpec = do
-  let baseUrl = BaseUrl Http "example.com" 80 ""
+  let baseUrl = HttpDomain "example.com"
 
   describe "throw appropriate errors" $ do
     it "throw failure error" $ do

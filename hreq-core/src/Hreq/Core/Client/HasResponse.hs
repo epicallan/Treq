@@ -153,4 +153,4 @@ decodeAsHlist srs response = case srs of
   -- that triggers a type error when 'Raw' is in a non-singleton
   -- type level list
   (SCons (SRaw _) _xs)-> error "GHC Error"
-  (SCons (SResStream _) _xs)-> error "GHC Error"
+  (SCons (SResStream _ _) _xs)-> error "GHC Error"

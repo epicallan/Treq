@@ -70,6 +70,7 @@ type family HttpResConstraints (res :: [ResContent Type]) :: Constraint where
   HttpResConstraints '[] = ()
   HttpResConstraints  ('ResBody ctyp a ': ts) =
      (HasMediaType ctyp, MediaDecode ctyp a, HttpResConstraints ts)
+  HttpResConstraints  ('ResStream ctyp a ': ts) = (HasMediaType ctyp, HttpResConstraints ts)
   HttpResConstraints ('ResHeaders hs ': ts) = (HttpSymbolTypePair hs, HttpResConstraints ts)
   HttpResConstraints ('Raw a ': ts) = HttpResConstraints ts
 

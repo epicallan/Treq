@@ -28,6 +28,8 @@ I envisioned Hreq as the best possible compromise of both worlds.
  - In Hreq, API types are used directly within API functions via Type Application while in servant-client API types create new API functions for creating API requests.
 
  - In Hreq, API Request component arguments are provided to the API function through a Heterogeneous list.
+ 
+ - Hreq supports the concept of Retry policy, where a request is retried per set retry policy on failure. 
 
 ## Usage Example
 
@@ -64,7 +66,7 @@ main' = do
   print res
   where
     baseUrl :: BaseUrl
-    baseUrl = BaseUrl Http "example.com" 80 "user"
+    baseUrl = HttpDomain "example.com"
 
     newUser :: User
     newUser = User "Allan" 29

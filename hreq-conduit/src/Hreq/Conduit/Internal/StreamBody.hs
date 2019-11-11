@@ -15,7 +15,7 @@ type BodyConduit = ConduitT () ByteString IO ()
 newtype ReqBodySource = ReqBodySource BodyConduit
 
 -- | For use in API endpoint type definition
--- >>> "post" :> ConduitReqBody :> RawResponse POST
+-- >>> type ExampleQuery = "post" :> ConduitReqBody :> RawResponse POST
 --
 type ConduitReqBody = StreamBody OctetStream ReqBodySource
 

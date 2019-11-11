@@ -8,4 +8,4 @@ module Hreq.Conduit
 import Hreq.Conduit.Internal.HTTP
 import Hreq.Conduit.Internal.StreamBody
 import Hreq.Core.API
-import Hreq.Core.Client -- | TODO: only select whats required
+import Hreq.Core.Client

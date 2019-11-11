@@ -15,7 +15,6 @@ module Hreq.Client.Internal.HTTP
   , requestToHTTPRequest
   , httpResponsetoResponse
   , catchConnectionError
-  , isLeft
   ) where
 
 import Prelude ()
@@ -28,6 +27,7 @@ import Control.Monad.Reader (MonadIO (..), MonadReader, MonadTrans, ReaderT (..)
 import Control.Monad.STM (STM, atomically)
 import Control.Retry (retrying)
 import qualified Data.ByteString.Lazy as LBS
+import Data.Either (isLeft)
 import Data.Foldable (toList)
 import Data.Maybe (maybeToList)
 import Data.String.Conversions (cs)
@@ -188,8 +188,3 @@ catchConnectionError :: IO a -> IO (Either ClientError a)
 catchConnectionError action =
   catch (Right <$> action)
     $ \e -> pure . Left . ConnectionError $ SomeException (e :: HTTP.HttpException)
-
-isLeft :: Either a b -> Bool
-isLeft x = case x of
-   Left _  -> True
-   Right _ -> False

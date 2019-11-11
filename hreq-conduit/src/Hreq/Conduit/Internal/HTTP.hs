@@ -21,10 +21,11 @@ import Data.ByteString
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as LBS
 import Data.Conduit
+import Data.Either (isLeft)
 import Data.Proxy
 import Hreq.Client.Internal.Config (HttpConfig (..), StatusRange (..), createDefConfig)
 import Hreq.Client.Internal.HTTP (catchConnectionError, checkHttpResponse, httpResponsetoResponse,
-                                  isLeft, requestToHTTPRequest, runHttpClient)
+                                  requestToHTTPRequest, runHttpClient)
 import Hreq.Core.Client
 import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Types (statusCode)

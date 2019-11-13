@@ -75,4 +75,4 @@ instance ReflectMethod 'CONNECT where
     reflectMethod _ = methodConnect
 
 -- $setup
--- >>> type = Raw
+-- >>> Data Raw

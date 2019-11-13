@@ -1,6 +1,6 @@
 cabal-version: >= 2.0
 name:           hreq-client
-version:        0.0.1.0
+version:        0.1.0.0
 synopsis:       A Type dependent Highlevel HTTP client library.
 description:    A Type dependent highlevel HTTP client library inspired by servant-client.
 category:       Network, Web
@@ -45,7 +45,7 @@ library
     exceptions           >= 0.10.0 && < 0.11,
     http-client          >= 0.6.4 && < 0.7,
     http-client-tls      >= 0.3.5 && < 0.4,
-    hreq-core            >= 0.0.1,
+    hreq-core            >= 0.1.0,
     http-media           >= 0.8.0 && < 0.9,
     http-types           >= 0.12.3 && < 0.13,
     mtl                  >= 2.2.2 && < 3.0,

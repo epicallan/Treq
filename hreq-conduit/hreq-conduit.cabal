@@ -1,6 +1,6 @@
 cabal-version: >= 2.0
 name:           hreq-conduit
-version:        0.0.1.0
+version:        0.1.0.0
 synopsis:       Conduit streaming support for Hreq.
 description:    Conduit streaming support for Hreq an HTTP client library.
 category:       Network, Web
@@ -44,8 +44,8 @@ library
     exceptions           >= 0.10.0 && < 0.11,
     http-client          >= 0.6.4 && < 0.7,
     http-types           >= 0.12.3 && < 0.13,
-    hreq-client          >= 0.0.1,
-    hreq-core            >= 0.0.1,
+    hreq-client          >= 0.1.0,
+    hreq-core            >= 0.1.0,
     conduit              >=1.3.1   && <1.4,
     mtl                  >= 2.2.2 && < 3.0,
     retry                >= 0.8   && < 0.9,

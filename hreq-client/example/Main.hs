@@ -28,8 +28,8 @@ getUserByName userName = hreq @(Capture Text :> GetJson User) (userName :. Empty
 getAllUsers :: RunClient m => m [User]
 getAllUsers = hreq @("all" :> GetJson [User]) Empty
 
-createUser :: RunClient m => User -> m ()
-createUser user = hreq @(JsonBody User :> EmptyResponse POST) (user :. Empty)
+createUser :: RunClient m => User -> m User
+createUser user = hreq @(JsonBody User :> PostJson User) (user :. Empty)
 
 -- | Don't run main without supplying a functioning baseUrl.
 main :: IO ()

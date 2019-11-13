@@ -1,9 +1,9 @@
 module Hreq.Pure.SuccessSpec (spec) where
 
+import Data.Foldable
 import Data.Proxy
 import Test.Hspec
 
-import Data.Foldable
 import Hreq.Client
 import Hreq.Core.Client (RequestBody (..))
 import Hreq.Pure.Util (TestState (..), TestUser (..), defaultResponse, runClientPure)
@@ -28,7 +28,7 @@ successSpec = do
     it "works with request body" $ do
       let x = hreq @(JsonBody TestUser :> RawResponse GET) (testUser :. Empty)
           RunClient req _ = runClientPure' baseUrl x
-          Just (RequestBodyBS body, _ )  = reqBody req
+          Just (RequestBodyLBS body, _ )  = reqBody req
       body `shouldBe` mediaEncode (Proxy @JSON) testUser
 
     it "works with query flags" $ do

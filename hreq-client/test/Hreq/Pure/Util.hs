@@ -27,17 +27,17 @@ setClientRequest r h = case h of
   Throw e        -> Throw e
 
 instance RunClient (ClientPure 'Default) where
-  runClient req         = RunClient req defaultResponse
+  runClient req       = RunClient req defaultResponse
   throwHttpError      = Throw
   checkResponse req _ = RunClient req Nothing
 
 instance RunClient (ClientPure 'FailureState) where
-  runClient req         = Throw $ FailureResponse req defaultResponse
+  runClient req       = Throw $ FailureResponse req defaultResponse
   throwHttpError      = Throw
   checkResponse req _ = RunClient req Nothing
 
 instance RunClient (ClientPure 'DecodingErrorState) where
-  runClient req         = RunClient req (defaultResponse { resBody = "hey" })
+  runClient req       = RunClient req (defaultResponse { resBody = "hey" })
   throwHttpError      = Throw
   checkResponse req _ = RunClient req Nothing
 

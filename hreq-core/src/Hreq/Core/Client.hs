@@ -11,12 +11,12 @@ module Hreq.Core.Client
   , module Hreq.Core.Client.HasRequest
     -- * HasResponse
   , module Hreq.Core.Client.HasResponse
+    -- * Internal
+  , module Hreq.Core.Client.Internal
     -- * RunClient
   , module Hreq.Core.Client.RunClient
     -- * ClientError
   , module Hreq.Core.Client.ClientError
-    -- * HasClient
-  , module Hreq.Core.Client.Internal
     -- * BasicAuth
   , module Hreq.Core.Client.BasicAuth
       -- * Hlist
@@ -27,11 +27,10 @@ import Data.Hlist
 
 import Hreq.Core.Client.BaseUrl
 import Hreq.Core.Client.BasicAuth
-import Hreq.Core.Client.Internal
+import Hreq.Core.Client.ClientError
 import Hreq.Core.Client.HasRequest
 import Hreq.Core.Client.HasResponse
-import Hreq.Core.Client.ClientError
+import Hreq.Core.Client.Internal
 import Hreq.Core.Client.Request
 import Hreq.Core.Client.Response
 import Hreq.Core.Client.RunClient
-

@@ -16,9 +16,9 @@ The Hreq github repository is a mono-repo composed of the following:
 
 - [hreq-conduit](https://github.com/epicallan/hreq/tree/master/hreq-conduit) an HTTP client with streaming support via conduit.
 
-### Checkout accompanying blog post for more details
+### Checkout accompanying blog post and minimal tutorial for more details
 
-* HTTP Requests with Hreq -- TODO: add link
+* [HTTP Requests with Hreq](https://lukwagoallan.com/posts/http-requests-with-hreq)
 
 ##  Motivation
 

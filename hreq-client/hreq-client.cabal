@@ -4,7 +4,7 @@ version:        0.1.0.0
 synopsis:       A Type dependent Highlevel HTTP client library.
 description:    A Type dependent highlevel HTTP client library inspired by servant-client.
 category:       Network, Web
-homepage:       https://github.com/epicallan/hreq.git#readme
+homepage:       https://github.com/epicallan/hreq/blob/master/README.md
 bug-reports:    https://github.com/epicallan/hreq.git/issues
 author:         Lukwago Allan <epicallan.al@gmail>
 maintainer:     Lukwago Allan <epicallan.al@gmail>

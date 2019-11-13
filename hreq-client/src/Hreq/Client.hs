@@ -3,67 +3,78 @@
 -- endpoints for Http client requests.
 -- Hreq is greatly inspired by Servant Client.
 --
--- == Full usage Example
+-- == Examples
 --
--- > -- Test data
+-- Assume we are making requests against an HTTP service providing a JSON user management API.
+--
+-- > {-# LANGUAGE DataKinds         #-}
+-- > {-# LANGUAGE DeriveAnyClass    #-}
+-- > {-# LANGUAGE DeriveGeneric     #-}
+-- > {-# LANGUAGE OverloadedStrings #-}
+-- > {-# LANGUAGE TypeApplications  #-}
+-- > {-# LANGUAGE TypeOperators     #-}
+-- >
+-- > import Control.Monad.IO.Class (liftIO)
+-- > import Data.Aeson (FromJSON, ToJSON)
+-- > import Data.Text (Text)
+-- > import GHC.Generics (Generic)
+-- > import Hreq.Client
+-- >
 -- > data User = User
--- >  { name :: String
+-- >  { name :: Text
 -- >  , age  :: Int
 -- >  } deriving (Show, Generic, FromJSON, ToJSON)
--- >
--- > -- Program
+--
+-- @User@ service API URL
+--
+-- > baseUrl :: BaseUrl
+-- > baseUrl = HttpUrl "example.com" "user"
+--
+-- ===Simple Get request
+--
+-- Make a Get request obtaining a @User@ by a specified @user-name@ at <http://example.com/user/:userName>
+--
+-- > getUserByName :: RunClient m => Text -> m User
+-- > getUserByName userName = hreq @(Capture Text :> GetJson User) (userName :. Empty)
+--
+-- The @Capture Text :> GetJson User@ type with in @getUserByName@ is an API endpoint type definition.
+--
+-- The API type definition in this instance demands that a heterogeneous list containing a 'Text' value is supplied to the 'hreq' function.
+--
+-- @userName ':.' 'Empty'@ forms the required heterogeneous list value for the 'hreq' function.
+-- Finally, the API type states that we will obtain a 'JSON' @User@ response output.
+--
+-- ===Simple Post request
+--
+-- Make a Post request with Json User data for a request body returning a Json User response at <http://example.com/user>
+--
+-- > createUser :: RunClient m => User -> m ()
+-- > createUser user = hreq @(JsonBody User :> EmptyResponse POST) (user :. Empty)
+--
+-- ===Get Request with QueryFlag
+--
+-- Make a Get requesting obtaining all users at API endpoint <http://example.com/user/all?old>
+--
+-- > getAllUsers :: RunClient m => m [User]
+-- > getAllUsers = hreq @("all" :> QueryFlag "old" :> GetJson [User]) Empty
+--
+-- ===Running api endpoint functions
+--
+-- With in the main function; the API endpoint functions run within the 'Hreq' monad.
+-- The Hreq monad has an instance of the 'RunClient' class and 'MonadIO' class.
+--
 -- > main :: IO ()
--- > main = do
--- >  res <- runHreq baseUrl $ do
--- >    -- | Make a GET request to "example.com/api/25" returning a JSON response of User type
--- >    requestedUser <-  hreq @(Capture Int :> GetJson User) (25 :. Empty)
--- >
--- >    -- | Make a POST request post to "example.com/api" with a request body of type User
--- >    -- returning a response value of type 'User'
--- >    createdUser   <-  hreq @(JsonBody User :> PostJson User) (user :. Empty)
--- >    return (requestedUser, createdUser)
--- >  print res
+-- > main = runHreq baseUrl $ do
+-- >  reqUser     <- getUserByName "allan"
+-- >  createdUser <- createUser newUser
+-- >  allUsers    <- getAllUsers
+-- > --Delete users with age equal to 20
+-- >  hreq @(Capture Int :> EmptyResponse DELETE) (20 :. Empty)
+-- >  -- do something with API data
+-- >  liftIO $ print (reqUser, createdUser, allUsers)
 -- >  where
--- >    user = "Allan" 29
--- >    baseUrl = BaseUrl Http "example.com" 80 "api"
---
--- == Full usage example explanation
---
--- The first 'hreq' function takes in an API structure type argument for our case;
---
--- >>> type ApiQuery = Capture Int :> GetJson User
---
--- and an heterogeneous list containing request component values,
--- whose types are derived from the provided API structure type.
---
--- >>> (25 :. Empty) :: Hlist '[Int]
--- 25 :. Nil
---
---
--- The call to the first 'hreq' function subsequently results into the following:
---
--- @
---   'hreq' @('Capture' Int :> 'GetJson' User) (25 ':.' 'Empty')
--- @
---
--- * Safe creation of a URL endpoint of the form <http://example.com/api/25>
--- and running of an http request with that @URL@.
---
--- * Setting of the GET HTTP client call response to be of type @User@ decoded as a @JSON@ resource body.
---
--- The call to the second 'hreq' has similar results:
---
--- @
---   hreq @('JsonBody' User :> 'PostJson' User) (user :. Empty)
--- @
---
--- * Safe creation of a URL endpoint of the form <http://example.com/api/user>, setting request body to provided
--- @user@ value encoded as a JSON object and eventually running an http request with the created components.
---
--- * Setting of the POST HTTP client call response to be of type @User@ decoded as a @JSON@ resource body.
---
--- The 'runHreq' function runs the 'Hreq' monad created as a result of calling 'hreq' while also taking in a
--- 'BaseUrl' value.
+-- >    newUser :: User
+-- >    newUser = User "allan" 12
 --
 -- ==More examples
 --
@@ -182,12 +193,8 @@
 -- >>> multiResults = hreq @MultiResultsQuery Empty
 --
 module Hreq.Client
-  ( -- * API
-    module Hreq.Core.API
-    -- * HTTP
+  ( module Hreq.Core.API
   , module Hreq.Core.Client
-
-   -- * Hreq
   , module Hreq.Client.Internal.HTTP
   , module Hreq.Client.Internal.Config
   ) where

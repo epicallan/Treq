@@ -16,7 +16,7 @@ module Hreq.Core.Client
     -- * ClientError
   , module Hreq.Core.Client.ClientError
     -- * HasClient
-  , module Hreq.Core.Client.HasClient
+  , module Hreq.Core.Client.Internal
     -- * BasicAuth
   , module Hreq.Core.Client.BasicAuth
       -- * Hlist
@@ -27,7 +27,7 @@ import Data.Hlist
 
 import Hreq.Core.Client.BaseUrl
 import Hreq.Core.Client.BasicAuth
-import Hreq.Core.Client.HasClient
+import Hreq.Core.Client.Internal
 import Hreq.Core.Client.HasRequest
 import Hreq.Core.Client.HasResponse
 import Hreq.Core.Client.ClientError

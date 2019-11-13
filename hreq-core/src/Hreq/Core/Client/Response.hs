@@ -18,4 +18,3 @@ data ResponseF a = Response
   } deriving (Eq, Show, Functor)
 
 type Response = ResponseF LBS.ByteString
--- type StreamingResponse = forall a. HasStreamResponse a => ResponseF a

@@ -27,12 +27,12 @@ type Pooper = IO ByteString
 -- | A function which must be provided with a Popper.
 type NeedsPooper a = Pooper -> IO a
 
--- | A datatype containing a function which will provide a 'Popper' to a 'NeedsPopper'. .
+-- | A datatype containing a function which will provide a 'Pooper' to a 'NeedsPooper'. .
 newtype GivesPooper a
   = GivesPooper { runGivesPooper ::  NeedsPooper a -> IO a }
 
 instance Show (GivesPooper a) where
-  show _ = "GivesPooper IO"
+  show _ = "GivesPooper <IO>"
 
 instance Eq (GivesPooper a) where
   _ == _ = False

@@ -1,34 +1,40 @@
+-- | This module provides functionality for running the 'Hreq' monad as a Streaming HTTP client and necessary
+-- class instances.
+--
 {-# LANGUAGE AllowAmbiguousTypes #-}
 module Hreq.Conduit.Internal.HTTP
   ( Hreq (..)
   , ResBodyStream (..)
   , RunConduitClient
+  , RunClient
   -- * Run Hreq client
   , runHreq
   , runHreqWithConfig
   , createDefConfig
-  -- * creates Hreq Client
-  , hreq
+  -- * Create Streaming Hreq Client
   , hreqWithConduit
   ) where
-import Control.Monad
+import Control.Monad (unless)
 import Control.Monad.Catch (throwM)
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.IO.Unlift (MonadUnliftIO (..), wrappedWithRunInIO)
 import Control.Monad.Reader (MonadReader, MonadTrans, ReaderT (..), ask)
 import Control.Retry (retrying)
-import Data.ByteString
+import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as LBS
 import Data.Conduit
 import Data.Either (isLeft)
-import Data.Proxy
+import Data.Proxy (Proxy (..))
+import qualified Network.HTTP.Client as HTTP
+import Network.HTTP.Types (statusCode)
+
 import Hreq.Client.Internal.Config (HttpConfig (..), StatusRange (..), createDefConfig)
 import Hreq.Client.Internal.HTTP (catchConnectionError, checkHttpResponse, httpResponsetoResponse,
                                   requestToHTTPRequest, runHttpClient)
-import Hreq.Core.Client
-import qualified Network.HTTP.Client as HTTP
-import Network.HTTP.Types (statusCode)
+import Hreq.Core.Client (BaseUrl (..), ClientError (..), HasRequest (..), HasStreamingClient,
+                         Request, RunClient (..), RunStreamingClient (..), hreqStream)
+
 
 newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }
   deriving (Functor, Applicative, Monad, MonadReader HttpConfig, MonadTrans, MonadIO)
@@ -92,8 +98,12 @@ runStreamingHttp req f = do
             throwM $ FailureResponse req (httpResponsetoResponse (const bs) res)
           else pure ()
 
+-- | Streaming HTTP response with Conduit.
+--
+-- The required constraints are represented by the 'Hreq.Core.Client.Internal.HasStreamingClient' constraint.
+--
 hreqWithConduit
-  :: forall api ts v m. (HasStreamingClient api ts v m ResBodyStream)
+  :: forall api ts v m. (HasStreamingClient api ResBodyStream ts v m )
   => HttpInput ts
   -> (StreamConduit -> IO ())
   -> m ()

@@ -76,8 +76,3 @@ addHeader name val req =
 setReqBody :: RequestBody -> MediaType -> Request -> Request
 setReqBody body mediaType req =
   req { reqBody = Just (body, mediaType) }
-
-
--- setReqBody :: ByteString -> MediaType -> Request -> Request
--- setReqBody body mediaType req =
---   req { reqBody = Just (body, mediaType) }

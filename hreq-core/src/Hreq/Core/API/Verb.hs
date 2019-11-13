@@ -19,6 +19,11 @@ import Network.HTTP.Types.Method (Method, StdMethod (..), methodConnect, methodD
 -- free to define your own
 --
 -- >>> type Trace = Verb 'TRACE
+--
+-- Verb with contents example:
+--
+-- >>> type GetRaw = Verb 'GET '[ Raw ]
+--
 data Verb (method :: k1) (contents:: [k2])
   deriving (Typeable)
 
@@ -68,3 +73,6 @@ instance ReflectMethod 'TRACE where
 
 instance ReflectMethod 'CONNECT where
     reflectMethod _ = methodConnect
+
+-- $setup
+-- >>> type = Raw

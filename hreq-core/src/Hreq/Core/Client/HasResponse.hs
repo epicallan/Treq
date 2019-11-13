@@ -10,7 +10,6 @@ import Data.Kind
 import Data.Hlist
 import Data.Proxy
 import Data.Singletons
-import qualified Data.ByteString.Lazy as LBS
 import qualified Data.List.NonEmpty as NE
 import GHC.TypeLits
 import Network.HTTP.Types (hContentType)
@@ -23,12 +22,6 @@ class MonadError ClientError m => HasResponse (a :: k) m where
    type HttpOutput a :: Type
 
    httpRes :: sing a -> Response -> m (HttpOutput a)
-
--- instance (MonadError ClientError m ) => HasResponse '[] m where
---   type HttpOutput (Stream method streamType) = (streamType -> IO ())
-
---   httpRes = undefined
-
 
 instance
   ( UniqMembers rs "Response"
@@ -45,17 +38,18 @@ instance (MonadError ClientError m) => HasResponse '[] m where
 
   httpRes _ _ = return ()
 
--- instance {-# OVERLAPPING #-} (MonadError ClientError m)
---   => HasResponse '[ Stream a ] m where
---   type HttpOutput '[ Stream a ] = a -> IO ()
-
---   httpRes _ = return
-
 instance {-# OVERLAPPING #-} (MonadError ClientError m)
   => HasResponse '[ 'Raw a ] m where
   type HttpOutput '[ 'Raw a ] = Response
 
   httpRes _ = return
+
+instance MonadError ClientError m => HasResponse ('ResStream ': rs) m where
+
+  type HttpOutput ('ResStream ': rs) =
+    TypeError ('Text "ResStream shouldn't be an instance of HasResponse class")
+
+  httpRes _ _ =  error "GHC Error"
 
 instance {-# OVERLAPPING #-}
   MonadError ClientError m
@@ -113,7 +107,7 @@ decodeAsBody _ response = do
   unless (any (responseContentType `matches`) accepts)
     . throwError $ UnsupportedContentType (NE.head accepts) response
 
-  case mediaDecode ctypProxy (LBS.toStrict $ resBody response) of
+  case mediaDecode ctypProxy (resBody response) of
      Left err -> throwError $ DecodeFailure (unDecodeError err) response
      Right val -> pure val
   where
@@ -128,6 +122,7 @@ decodeAsBody _ response = do
       Nothing -> return $ mediaType (Proxy @PlainText) -- fall back to plain text
       Just t  -> maybe (throwError $ InvalidContentTypeHeader response) return $ parseAccept t
 
+-- | Turn a Response into a 'Hlist' of outputs
 decodeAsHlist
   :: (MonadError ClientError m, HttpResConstraints rs)
   => Sing rs
@@ -143,6 +138,7 @@ decodeAsHlist srs response = case srs of
 
   SCons (SResHeaders (SCons _h _hs)) xs -> do
     let headers = resHeaders response
+
     rest <- decodeAsHlist xs response
     return $ headers :. rest
 
@@ -153,4 +149,8 @@ decodeAsHlist srs response = case srs of
   -- that triggers a type error when 'Raw' is in a non-singleton
   -- type level list
   (SCons (SRaw _) _xs)-> error "GHC Error"
+
+  -- Should never match because we have a class instance
+  -- that triggers a type error when 'ResStream' is in a instance of
+  -- HasResponse class
   (SCons (SResStream _ _) _xs)-> error "GHC Error"

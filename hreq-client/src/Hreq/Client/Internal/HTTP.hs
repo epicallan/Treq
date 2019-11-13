@@ -1,5 +1,5 @@
--- | This module provides the 'Hreq' Monad which is an instance of
--- 'RunClient' class and hence making it an HTTP client.
+-- | This module provides functionality for running the 'Hreq' Monad as an HTTP client
+-- and the necessary required class instances, such as 'RunClient' instance.
 --
 {-# LANGUAGE TupleSections #-}
 module Hreq.Client.Internal.HTTP
@@ -37,9 +37,10 @@ import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Media (renderHeader)
 import Network.HTTP.Types (Header, hAccept, hContentType, renderQuery, statusCode, statusMessage)
 
-import Hreq.Client.Internal.Config
+import Hreq.Client.Internal.Config (HttpConfig (..), StatusRange (..), createDefConfig)
 import Hreq.Core.API (GivesPooper (..))
-import Hreq.Core.Client
+import Hreq.Core.Client (BaseUrl (..), ClientError (..), Request, RequestBody (..), RequestF (..),
+                         Response, ResponseF (..), RunClient (..), Scheme (..))
 
 -- | Monad for running Http client requests
 newtype Hreq m a = Hreq { runHreq' :: ReaderT HttpConfig m a }

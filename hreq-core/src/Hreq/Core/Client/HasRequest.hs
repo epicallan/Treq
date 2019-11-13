@@ -71,8 +71,7 @@ getAcceptHeader = \case
   SCons (SResHeaders _) rs -> getAcceptHeader rs
   SCons (SResStream sctyp _) _rs -> Just $ mediaType sctyp
 
--- | TODO: instead of a big case statement we can have multiple calls
--- of the same function.
+-- | Transform a 'Hlist' of inputs into a 'Request'
 encodeHlistAsReq
   :: forall (ts :: [ReqContent Type]). (HttpReqConstraints ts)
   => Sing ts
@@ -129,7 +128,7 @@ encodeHlistAsReq xs input req = case (xs, input) of
        $ appendQueryFlags (toQueryFlags sflags) req
 
   (SCons (SReqBody sctyp _sa) sxs, y :. ys)                    ->
-     let body = RequestBodyBS $ mediaEncode sctyp y
+     let body = RequestBodyLBS $ mediaEncode sctyp y
          req' = setReqBody body (mediaType sctyp) req
      in encodeHlistAsReq sxs ys req'
 

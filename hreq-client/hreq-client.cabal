@@ -79,6 +79,7 @@ executable example
       base >= 4.10.1 && < 5
     , hreq-client
     , aeson  >= 1.4.5 && < 1.5
+    , text  >= 1.2.4 && < 1.3
 
 test-suite spec
   build-depends:

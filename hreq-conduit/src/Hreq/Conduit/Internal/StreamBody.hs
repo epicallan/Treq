@@ -1,3 +1,5 @@
+-- | This module provides functionality for working with a streaming request body.
+--
 module Hreq.Conduit.Internal.StreamBody where
 
 import Data.ByteString

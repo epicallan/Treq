@@ -14,7 +14,10 @@ import Prelude ()
 import Prelude.Compat
 
 import Control.Exception (Exception)
-import Data.Aeson (FromJSON, ToJSON, eitherDecodeStrict, encode)
+import Data.Aeson (FromJSON, ToJSON, encode, parseJSON)
+import Data.Aeson.Parser (value)
+import Data.Aeson.Types (parseEither)
+import Data.Attoparsec.ByteString.Char8 (endOfInput, parseOnly, skipSpace, (<?>))
 import Data.Bifunctor (first)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Lazy as LBS
@@ -63,29 +66,28 @@ instance HasMediaType OctetStream where
   mediaType _ = "application" // "octet-stream"
 
 class HasMediaType ctyp => MediaDecode ctyp a where
-  mediaDecode :: sing ctyp -> ByteString -> Either DecodeError a
-  -- TODO: examine whether Lazy ByteString is better.
+  mediaDecode :: sing ctyp -> LBS.ByteString -> Either DecodeError a
 
 class HasMediaType ctyp => MediaEncode ctyp a where
-  mediaEncode :: sing ctyp -> a -> ByteString
+  mediaEncode :: sing ctyp -> a -> LBS.ByteString
 
 instance FromJSON a => MediaDecode JSON a where
-  mediaDecode _ = first (DecodeError . cs) . eitherDecodeStrict
+  mediaDecode _ = first (DecodeError . cs) . eitherDecodeLenient
 
 instance ToJSON a => MediaEncode JSON a where
   mediaEncode _ = cs . encode
 
 instance MediaDecode OctetStream ByteString where
-  mediaDecode _ = Right . id
-
-instance MediaDecode OctetStream LBS.ByteString where
   mediaDecode _ = Right . cs
 
+instance MediaDecode OctetStream LBS.ByteString where
+  mediaDecode _ = Right . id
+
 instance MediaEncode OctetStream ByteString where
-  mediaEncode _ = id
+  mediaEncode _ = cs
 
 instance MediaEncode OctetStream LBS.ByteString where
-  mediaEncode _ = cs
+  mediaEncode _ = id
 
 instance MediaDecode PlainText Text where
   mediaDecode _ = Right . cs
@@ -102,3 +104,24 @@ instance ToForm a => MediaEncode FormUrlEncoded a where
 
 instance FromForm a => MediaDecode FormUrlEncoded a where
   mediaDecode _ = first DecodeError . urlDecodeAsForm . cs
+
+-- * Helper functions
+
+-- | Like 'Data.Aeson.eitherDecode' but allows all JSON values instead of just
+-- objects and arrays. This function is borrowed from @servant@
+--
+-- Will handle trailing whitespace, but not trailing junk. ie.
+--
+-- >>> eitherDecodeLenient "1 " :: Either String Int
+-- Right 1
+--
+-- >>> eitherDecodeLenient "1 junk" :: Either String Int
+-- Left "trailing junk after valid JSON: endOfInput"
+eitherDecodeLenient :: FromJSON a => LBS.ByteString -> Either String a
+eitherDecodeLenient input =
+    parseOnly parser (cs input) >>= parseEither parseJSON
+  where
+    parser = skipSpace
+          *> Data.Aeson.Parser.value
+          <* skipSpace
+          <* (endOfInput <?> "trailing junk after valid JSON")

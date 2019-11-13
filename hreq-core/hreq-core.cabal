@@ -2,7 +2,7 @@ cabal-version: >= 2.0
 name:           hreq-core
 version:        0.1.0.0
 synopsis:       Core functionality for Hreq Http client library
-description:    Core functionality for Hreq, a type dependent highlevel HTTP client library inspired by servant-client.
+description:    Core functionality for Hreq. A type dependent highlevel HTTP client library inspired by servant-client.
 category:       Network, Web
 homepage:       https://github.com/epicallan/hreq.git#readme
 bug-reports:    https://github.com/epicallan/hreq.git/issues

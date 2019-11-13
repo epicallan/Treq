@@ -4,7 +4,7 @@ version:        0.1.0.0
 synopsis:       Conduit streaming support for Hreq.
 description:    Conduit streaming support for Hreq an HTTP client library.
 category:       Network, Web, Conduit
-homepage:       https://github.com/epicallan/hreq.git#readme
+homepage:       https://github.com/epicallan/hreq/blob/master/hreq-conduit/README.md
 bug-reports:    https://github.com/epicallan/hreq.git/issues
 author:         Lukwago Allan <epicallan.al@gmail>
 maintainer:     Lukwago Allan <epicallan.al@gmail>

@@ -1,3 +1,3 @@
-## Hreq 0.1.0.0
+## Hreq-Conduit 0.1.0.0
 
 * Initial public release

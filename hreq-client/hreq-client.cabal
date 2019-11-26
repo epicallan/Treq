@@ -1,6 +1,6 @@
 cabal-version: >= 2.0
 name:           hreq-client
-version:        0.1.0.0
+version:        0.1.1.0
 synopsis:       A Type dependent Highlevel HTTP client library.
 description:    A Type dependent highlevel HTTP client library inspired by servant-client.
 category:       Network, Web

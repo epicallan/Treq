@@ -60,11 +60,44 @@ instance {-# OVERLAPPING #-}
 
   httpRes _ _ =  error "GHC Error"
 
+-- | Expected status code much match received code
+instance {-# OVERLAPPING #-}
+  ( MonadError ClientError m
+  , KnownNat n
+  )
+  => HasResponse '[ ResStatus n ] m where
+  type HttpOutput '[ ResStatus n ] = Response
+
+  httpRes _ res = do
+    let expectedCode = fromIntegral @Integer @Int $ natVal (Proxy @n)
+        rcode = resStatusCode res
+    when (expectedCode /= rcode) $ throwError (InvalidStatusCode res)
+
+    return res
+
+-- | Expected status code much match received code in a response code list
+instance {-# OVERLAPPING #-}
+  ( MonadError ClientError m
+  , KnownNat n
+  , SingI ('Res (r ': rs))
+  , HttpResConstraints (r ': rs)
+  )
+  => HasResponse (ResStatus n : r : rs) m where
+  type HttpOutput (ResStatus n : r : rs) =  Hlist (HttpRes (r ': rs))
+
+  httpRes _ response = do
+    let expectedCode = fromIntegral @Integer @Int $ natVal (Proxy @n)
+        rcode = resStatusCode response
+    when (expectedCode /= rcode) $ throwError (InvalidStatusCode response)
+
+    case sing @('Res (r ': rs)) of
+      SRes xs -> decodeAsHlist xs response
+
 instance {-# OVERLAPPING #-}
   ( MediaDecode ctyp a
   , MonadError ClientError m
   )
-  => HasResponse '[ 'ResBody  ctyp a ] m where
+  => HasResponse '[ 'ResBody ctyp a ] m where
   type HttpOutput '[ 'ResBody ctyp a ] = a
 
   httpRes _ = decodeAsBody (Proxy @ctyp)
@@ -144,6 +177,15 @@ decodeAsHlist srs response = case srs of
 
   SCons (SResHeaders SNil) xs ->
     decodeAsHlist xs response
+
+  SCons (SResStatus _ snat) xs -> do
+    let rcode = resStatusCode response
+        expectedCode = withKnownNat snat (fromIntegral @Integer @Int $ natVal snat)
+
+    when (rcode /= expectedCode) $ throwError (InvalidStatusCode response)
+
+    rest <- decodeAsHlist xs response
+    return rest
 
   -- Should never match because we have a class instance
   -- that triggers a type error when 'Raw' is in a non-singleton

@@ -26,6 +26,8 @@ data ClientError =
   | UnsupportedContentType MediaType Response
   -- | The content-type header is invalid
   | InvalidContentTypeHeader Response
+  -- | The received status code didn't much the expected.
+  | InvalidStatusCode Response
   -- | There was a connection error, and no response was received
   | ConnectionError SomeException
   deriving (Show, Generic, Typeable)

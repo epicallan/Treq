@@ -31,6 +31,10 @@ getAllUsers = hreq @("all" :> GetJson [User]) Empty
 createUser :: RunClient m => User -> m User
 createUser user = hreq @(JsonBody User :> PostJson User) (user :. Empty)
 
+-- | status code should match 200 otherwise throw an error
+statusEx :: RunClient m => m (Hlist '[ User ])
+statusEx = hreq @(Verb GET '[ ResStatus 200, ResBody JSON User]) Empty
+
 -- | Don't run main without supplying a functioning baseUrl.
 main :: IO ()
 main = runHreq baseUrl $ do

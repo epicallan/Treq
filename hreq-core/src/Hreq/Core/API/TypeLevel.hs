@@ -3,7 +3,7 @@
 module Hreq.Core.API.TypeLevel where
 
 import Data.Kind (Type, Constraint)
-import GHC.TypeLits (Symbol, TypeError, ErrorMessage(..), KnownSymbol)
+import GHC.TypeLits (Symbol, TypeError, ErrorMessage(..), KnownSymbol, KnownNat)
 import Network.HTTP.Types (Header)
 import Web.HttpApiData (ToHttpApiData)
 
@@ -61,6 +61,7 @@ type family HttpReq (ts :: [ReqContent Type]) :: [  Type ] where
 type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
   HttpRes '[] = '[]
   HttpRes ('ResBody ctyp a ': ts) = a ': HttpRes ts
+  HttpRes ('ResStatus _a code ': ts) = HttpRes ts
   HttpRes ('ResHeaders (s ': hs) ': ts) = [Header] ': HttpRes ts
   HttpRes ('ResHeaders '[]  ': ts) = HttpRes ts
   HttpRes ('Raw a ': ts) = HttpRes ts
@@ -68,6 +69,7 @@ type family HttpRes (res :: [ ResContent Type ]) :: [ Type ] where
 -- | Response content types Constraints.
 type family HttpResConstraints (res :: [ResContent Type]) :: Constraint where
   HttpResConstraints '[] = ()
+  HttpResConstraints  ('ResStatus _a code ': ts) = (KnownNat code, HttpResConstraints ts)
   HttpResConstraints  ('ResBody ctyp a ': ts) =
      (HasMediaType ctyp, MediaDecode ctyp a, HttpResConstraints ts)
   HttpResConstraints  ('ResStream ctyp a ': ts) = (HasMediaType ctyp, HttpResConstraints ts)

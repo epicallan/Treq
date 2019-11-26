@@ -69,6 +69,7 @@ getAcceptHeader = \case
   SCons (SResBody sctyp _a) _rs -> Just $ mediaType sctyp
   SCons (SRaw _) rs -> getAcceptHeader rs
   SCons (SResHeaders _) rs -> getAcceptHeader rs
+  SCons (SResStatus _ _) rs -> getAcceptHeader rs
   SCons (SResStream sctyp _) _rs -> Just $ mediaType sctyp
 
 -- | Transform a 'Hlist' of inputs into a 'Request'

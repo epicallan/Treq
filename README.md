@@ -2,7 +2,7 @@
 
 [![Hackage](https://img.shields.io/hackage/v/hreq-core.svg?logo=haskell)](https://hackage.haskell.org/package/hreq-client)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build status](https://img.shields.io/travis/epicallan/hreq.svg?logo=travis)](https://travis-ci.org/epicallan/hreq)
+[![Build status](https://img.shields.io/travis/epicallan/hreq.svg?logo=travis&branch=master)](https://travis-ci.org/epicallan/hreq)
 
 ## Intro
 

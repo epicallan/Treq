@@ -184,9 +184,8 @@ decodeAsHlist srs response = case srs of
 
     when (rcode /= expectedCode) $ throwError (InvalidStatusCode response)
 
-    rest <- decodeAsHlist xs response
-    return rest
-
+    decodeAsHlist xs response
+ 
   -- Should never match because we have a class instance
   -- that triggers a type error when 'Raw' is in a non-singleton
   -- type level list

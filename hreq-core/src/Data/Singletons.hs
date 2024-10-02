@@ -15,11 +15,17 @@
     ===Attribution
     Some of the code in this module was directly borrowed from the Singletons library
 -}
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DataKinds #-}
 module Data.Singletons where
 
 import Data.Kind
+
+#if MIN_VERSION_base(4,18,0)
 import GHC.TypeLits hiding (SSymbol, SNat)
+#else
+import GHC.TypeLits
+#endif
 import Data.Typeable
 
 -- * Sing Type family

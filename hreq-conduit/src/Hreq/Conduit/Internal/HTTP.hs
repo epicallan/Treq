@@ -75,12 +75,12 @@ runStreamingHttp
 runStreamingHttp req f = do
     config <- ask
     let manager = httpManager config
-    let baseUrl = httpBaseUrl config
-    let statusRange = httpStatuses config
+        baseUrl = httpBaseUrl config
+        statusRange = httpStatuses config
 
-    let httpRequest = requestToHTTPRequest baseUrl req
+        httpRequest = requestToHTTPRequest baseUrl req
 
-    let action = liftIO $ catchConnectionError $ HTTP.withResponse httpRequest manager $ \res -> do
+        action = liftIO $ catchConnectionError $ HTTP.withResponse httpRequest manager $ \res -> do
                     checkStreamResponse res statusRange
                     f (ResBodyStream $ bodyReaderSource (HTTP.responseBody res))
 

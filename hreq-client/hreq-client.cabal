@@ -109,9 +109,9 @@ test-suite doctests
   type:             exitcode-stdio-1.0
   main-is:          DocTests.hs
   build-depends:
-      base       >= 4.10.1 && < 5
-    , aeson      >= 1.4.5  && < 1.6  || >=2.2 && <2.3
-    , doctest    >= 0.15   && < 0.17
+      base       >= 4.14  && < 5
+    , aeson      >= 1.4.5 && < 1.6  || >= 2.2 && < 2.3
+    , doctest    >= 0.15  && < 0.17
     , hreq-client
 
   ghc-options:      -Wall -threaded

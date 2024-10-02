@@ -5,7 +5,7 @@
 module Hreq.Core.Client.Internal where
 
 import Control.Monad.Except
-import Control.Monad.IO.Class (MonadIO (..))
+import Control.Monad.IO.Class (liftIO)
 import Data.Proxy
 
 import Hreq.Core.API

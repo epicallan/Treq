@@ -1,7 +1,8 @@
 -- | This module provides a 'HasRequest' class that Interprets
 -- a 'ReqContent' type level list into 'Request' data
 --
-{-# LANGUAGE PatternSynonyms      #-}
+{-# LANGUAGE CPP             #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Hreq.Core.Client.HasRequest where
 
 import Prelude ()
@@ -11,7 +12,11 @@ import Data.Kind
 import Data.Hlist
 import Data.Proxy
 import Data.Singletons
+#if MIN_VERSION_base(4,18,0)
 import GHC.TypeLits hiding (withKnownNat, withKnownSymbol)
+#else
+import GHC.TypeLits
+#endif
 import Data.String (fromString)
 import Data.String.Conversions (cs)
 import Data.List (intersperse)

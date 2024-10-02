@@ -3,6 +3,7 @@
 --
 -- For instance @Verb GET '[]@ gets interpreted as an empty response of type Unit i.e @()@
 --
+{-# LANGUAGE CPP #-}
 module Hreq.Core.Client.HasResponse where
 
 import Control.Monad.Except
@@ -11,7 +12,11 @@ import Data.Hlist
 import Data.Proxy
 import Data.Singletons
 import qualified Data.List.NonEmpty as NE
+#if MIN_VERSION_base(4,18,0)
 import GHC.TypeLits hiding (withKnownNat)
+#else
+import GHC.TypeLits
+#endif
 import Network.HTTP.Types (hContentType)
 
 import Hreq.Core.API

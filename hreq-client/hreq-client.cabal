@@ -38,23 +38,23 @@ library
   default-extensions: LambdaCase DeriveGeneric FlexibleInstances FlexibleContexts ScopedTypeVariables TypeApplications TypeOperators MultiParamTypeClasses RecordWildCards TypeApplications TypeFamilies OverloadedStrings GADTs GeneralizedNewtypeDeriving FunctionalDependencies ConstraintKinds RankNTypes PolyKinds DataKinds KindSignatures ViewPatterns UndecidableInstances StrictData
 
   build-depends:
-    base                 >= 4.10.1 && < 5,
-    base-compat          >= 0.10.5 && < 0.13,
-    bytestring           >= 0.10.8 && < 0.11,
-    containers           >= 0.5.7.1 && < 0.7,
-    exceptions           >= 0.10.0 && < 0.11,
-    http-client          >= 0.6.4 && < 0.7,
-    http-client-tls      >= 0.3.5 && < 0.4,
-    hreq-core            >= 0.1.1,
-    http-media           >= 0.8.0 && < 0.9,
-    http-types           >= 0.12.3 && < 0.13,
-    mtl                  >= 2.2.2 && < 3.0,
-    retry                >= 0.8   && < 0.9,
-    time                 >= 1.6.0.1 && < 2.0,
-    text                 >= 1.2.4 && < 1.3,
-    stm                  >= 2.4.5.1 && < 2.6,
-    unliftio-core        >= 0.1.2 && < 0.2.0,
-    string-conversions   >= 0.4.0 && < 0.5
+    base                >= 4.14    && < 5,
+    base-compat         >= 0.10.5  && < 0.15,
+    bytestring          >= 0.10.8  && < 0.13,
+    containers          >= 0.5.7.1 && < 0.8,
+    exceptions          >= 0.10.0  && < 0.11,
+    http-client         >= 0.6.4   && < 0.8,
+    http-client-tls     >= 0.3.5   && < 0.4,
+    hreq-core           >= 0.1.1,
+    http-media          >= 0.8.0   && < 0.9,
+    http-types          >= 0.12.3  && < 0.13,
+    mtl                 >= 2.2.2   && < 3.0,
+    retry               >= 0.8     && < 0.9,
+    time                >= 1.6.0.1 && < 2.0,
+    text                >= 1.2.4   && < 2.2,
+    stm                 >= 2.4.5.1 && < 2.6,
+    unliftio-core      ^>= 0.2,
+    string-conversions  >= 0.4.0   && < 0.5
 
   ghc-options:
     -Wall
@@ -78,16 +78,16 @@ executable example
   build-depends:
       base >= 4.10.1 && < 5
     , hreq-client
-    , aeson  >= 1.4.5 && < 1.5
-    , text  >= 1.2.4 && < 1.3
+    , aeson >= 1.4.5  && < 1.6 || >= 2.2 && < 2.3
+    , text  >= 1.2.4  && < 1.3 || >= 2.0 && < 2.2
 
 test-suite spec
   build-depends:
-      base       >= 4.10.1 && < 5
-    , aeson      >= 1.4.5  && < 1.5
-    , containers >= 0.5.7.1 && < 0.7
-    , http-types >= 0.12.3 && < 0.13
-    , hspec      >= 2.6.0  && < 2.8
+      base       >= 4.10.1  && < 5
+    , aeson      >= 1.4.5   && < 1.6 || >= 2.2 && < 2.3
+    , containers >= 0.5.7.1 && < 0.8
+    , http-types >= 0.12.3  && < 0.13
+    , hspec      >= 2.6.0   && < 2.8
     , hreq-client
     , hreq-core
   main-is:             Spec.hs
@@ -110,8 +110,8 @@ test-suite doctests
   main-is:          DocTests.hs
   build-depends:
       base       >= 4.10.1 && < 5
-    , aeson      >= 1.4.5 && < 1.5
-    , doctest    >=0.15 && < 0.17
+    , aeson      >= 1.4.5  && < 1.6  || >=2.2 && <2.3
+    , doctest    >= 0.15   && < 0.17
     , hreq-client
 
   ghc-options:      -Wall -threaded

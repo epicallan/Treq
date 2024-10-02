@@ -15,11 +15,11 @@
     ===Attribution
     Some of the code in this module was directly borrowed from the Singletons library
 -}
-{-# LANGUAGE TypeInType #-}
+{-# LANGUAGE DataKinds #-}
 module Data.Singletons where
 
 import Data.Kind
-import GHC.TypeLits
+import GHC.TypeLits hiding (SSymbol, SNat)
 import Data.Typeable
 
 -- * Sing Type family

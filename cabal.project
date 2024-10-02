@@ -1,5 +1,4 @@
 packages:
-  ./
-  hreq-client/
-  hreq-core/
-  hreq-conduit/
+  ./hreq-client/
+  ./hreq-core/
+  ./hreq-conduit/

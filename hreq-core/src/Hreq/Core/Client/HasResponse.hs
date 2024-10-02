@@ -11,7 +11,7 @@ import Data.Hlist
 import Data.Proxy
 import Data.Singletons
 import qualified Data.List.NonEmpty as NE
-import GHC.TypeLits
+import GHC.TypeLits hiding (withKnownNat)
 import Network.HTTP.Types (hContentType)
 
 import Hreq.Core.API
@@ -71,9 +71,9 @@ instance {-# OVERLAPPING #-}
   httpRes _ res = do
     let expectedCode = fromIntegral @Integer @Int $ natVal (Proxy @n)
         rcode = resStatusCode res
-    when (expectedCode /= rcode) $ throwError (InvalidStatusCode res)
-
-    return res
+    if expectedCode /= rcode
+        then throwError (InvalidStatusCode res)
+        else do return res
 
 -- | Expected status code much match received code in a response code list
 instance {-# OVERLAPPING #-}
@@ -88,10 +88,11 @@ instance {-# OVERLAPPING #-}
   httpRes _ response = do
     let expectedCode = fromIntegral @Integer @Int $ natVal (Proxy @n)
         rcode = resStatusCode response
-    when (expectedCode /= rcode) $ throwError (InvalidStatusCode response)
-
-    case sing @('Res (r ': rs)) of
-      SRes xs -> decodeAsHlist xs response
+    if expectedCode /= rcode
+        then throwError (InvalidStatusCode response)
+        else do
+            case sing @('Res (r ': rs)) of
+                SRes xs -> decodeAsHlist xs response
 
 instance {-# OVERLAPPING #-}
   ( MediaDecode ctyp a
@@ -137,12 +138,12 @@ decodeAsBody
 decodeAsBody _ response = do
   responseContentType <- checkContentType
 
-  unless (any (responseContentType `matches`) accepts)
-    . throwError $ UnsupportedContentType (NE.head accepts) response
-
-  case mediaDecode ctypProxy (resBody response) of
-     Left err -> throwError $ DecodeFailure (unDecodeError err) response
-     Right val -> pure val
+  if any (responseContentType `matches`) accepts
+    then throwError $ UnsupportedContentType (NE.head accepts) response
+    else do
+      case mediaDecode ctypProxy (resBody response) of
+        Left err -> throwError $ DecodeFailure (unDecodeError err) response
+        Right val -> pure val
   where
     ctypProxy :: Proxy ctyp
     ctypProxy = Proxy
@@ -182,10 +183,10 @@ decodeAsHlist srs response = case srs of
     let rcode = resStatusCode response
         expectedCode = withKnownNat snat (fromIntegral @Integer @Int $ natVal snat)
 
-    when (rcode /= expectedCode) $ throwError (InvalidStatusCode response)
+    if rcode /= expectedCode
+        then throwError (InvalidStatusCode response)
+        else do decodeAsHlist xs response
 
-    decodeAsHlist xs response
- 
   -- Should never match because we have a class instance
   -- that triggers a type error when 'Raw' is in a non-singleton
   -- type level list

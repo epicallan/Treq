@@ -11,7 +11,7 @@ import Data.Kind
 import Data.Hlist
 import Data.Proxy
 import Data.Singletons
-import GHC.TypeLits
+import GHC.TypeLits hiding (withKnownNat, withKnownSymbol)
 import Data.String (fromString)
 import Data.String.Conversions (cs)
 import Data.List (intersperse)

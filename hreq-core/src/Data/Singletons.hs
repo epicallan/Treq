@@ -17,6 +17,7 @@
 -}
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE PolyKinds #-}
 module Data.Singletons where
 
 import Data.Kind

@@ -4,7 +4,7 @@
 module Hreq.Core.API.Request where
 
 import Data.Kind (Type)
-import Data.Singletons (Sing, SingI(..))
+import Data.Singletons (Sing, SingI (..))
 import GHC.TypeLits (Symbol)
 
 -- * Request Type

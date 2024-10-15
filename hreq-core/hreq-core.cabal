@@ -13,10 +13,10 @@ license:        MIT
 license-file:   LICENSE.md
 extra-doc-files: CHANGELOG.md, README.md
 tested-with:
-   GHC  ==8.2.2
-    ||  ==8.4.4
-    ||  ==8.6.5
-    ||  ==8.8.1
+   GHC  ==9.2.8
+    ||  ==9.4.8
+    ||  ==9.6.6
+    ||  ==9.8.2
 build-type: Custom
 
 source-repository head

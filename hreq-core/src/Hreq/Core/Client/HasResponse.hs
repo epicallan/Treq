@@ -6,6 +6,7 @@
 {-# LANGUAGE CPP #-}
 module Hreq.Core.Client.HasResponse where
 
+import Control.Monad (when, unless)
 import Control.Monad.Except
 import Data.Kind
 import Data.Hlist
@@ -76,9 +77,9 @@ instance {-# OVERLAPPING #-}
   httpRes _ res = do
     let expectedCode = fromIntegral @Integer @Int $ natVal (Proxy @n)
         rcode = resStatusCode res
-    if expectedCode /= rcode
-        then throwError (InvalidStatusCode res)
-        else do return res
+    when (expectedCode /= rcode) $ throwError (InvalidStatusCode res)
+
+    return res
 
 -- | Expected status code much match received code in a response code list
 instance {-# OVERLAPPING #-}
@@ -93,11 +94,10 @@ instance {-# OVERLAPPING #-}
   httpRes _ response = do
     let expectedCode = fromIntegral @Integer @Int $ natVal (Proxy @n)
         rcode = resStatusCode response
-    if expectedCode /= rcode
-        then throwError (InvalidStatusCode response)
-        else do
-            case sing @('Res (r ': rs)) of
-                SRes xs -> decodeAsHlist xs response
+    when (expectedCode /= rcode) $ throwError (InvalidStatusCode response)
+
+    case sing @('Res (r ': rs)) of
+      SRes xs -> decodeAsHlist xs response
 
 instance {-# OVERLAPPING #-}
   ( MediaDecode ctyp a
@@ -143,12 +143,12 @@ decodeAsBody
 decodeAsBody _ response = do
   responseContentType <- checkContentType
 
-  if any (responseContentType `matches`) accepts
-    then throwError $ UnsupportedContentType (NE.head accepts) response
-    else do
-      case mediaDecode ctypProxy (resBody response) of
-        Left err -> throwError $ DecodeFailure (unDecodeError err) response
-        Right val -> pure val
+  unless (any (responseContentType `matches`) accepts)
+    . throwError $ UnsupportedContentType (NE.head accepts) response
+
+  case mediaDecode ctypProxy (resBody response) of
+    Left err -> throwError $ DecodeFailure (unDecodeError err) response
+    Right val -> pure val
   where
     ctypProxy :: Proxy ctyp
     ctypProxy = Proxy
@@ -188,9 +188,9 @@ decodeAsHlist srs response = case srs of
     let rcode = resStatusCode response
         expectedCode = withKnownNat snat (fromIntegral @Integer @Int $ natVal snat)
 
-    if rcode /= expectedCode
-        then throwError (InvalidStatusCode response)
-        else do decodeAsHlist xs response
+    when (rcode /= expectedCode) $ throwError (InvalidStatusCode response)
+
+    decodeAsHlist xs response
 
   -- Should never match because we have a class instance
   -- that triggers a type error when 'Raw' is in a non-singleton

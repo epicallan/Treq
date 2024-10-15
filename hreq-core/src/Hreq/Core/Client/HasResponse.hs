@@ -6,13 +6,13 @@
 {-# LANGUAGE CPP #-}
 module Hreq.Core.Client.HasResponse where
 
-import Control.Monad (when, unless)
+import Control.Monad (unless, when)
 import Control.Monad.Except
-import Data.Kind
 import Data.Hlist
+import Data.Kind
+import qualified Data.List.NonEmpty as NE
 import Data.Proxy
 import Data.Singletons
-import qualified Data.List.NonEmpty as NE
 #if MIN_VERSION_base(4,18,0)
 import GHC.TypeLits hiding (withKnownNat)
 #else
@@ -147,7 +147,7 @@ decodeAsBody _ response = do
     . throwError $ UnsupportedContentType (NE.head accepts) response
 
   case mediaDecode ctypProxy (resBody response) of
-    Left err -> throwError $ DecodeFailure (unDecodeError err) response
+    Left err  -> throwError $ DecodeFailure (unDecodeError err) response
     Right val -> pure val
   where
     ctypProxy :: Proxy ctyp

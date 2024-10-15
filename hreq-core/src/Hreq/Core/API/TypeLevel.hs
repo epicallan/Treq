@@ -2,18 +2,18 @@
 --
 module Hreq.Core.API.TypeLevel where
 
-import Data.Kind (Type, Constraint)
-import GHC.TypeLits (Symbol, TypeError, ErrorMessage(..), KnownSymbol, KnownNat)
+import Data.Kind (Constraint, Type)
+import GHC.TypeLits (ErrorMessage (..), KnownNat, KnownSymbol, Symbol, TypeError)
 import Network.HTTP.Types (Header)
 import Web.HttpApiData (ToHttpApiData)
 
-import Hreq.Core.Client.BasicAuth (BasicAuthData)
-import Hreq.Core.API.Request (ReqContent(..))
-import Hreq.Core.API.Response (ResContent (..))
 import Hreq.Core.API.Internal ((:>))
-import Hreq.Core.API.MediaType (MediaDecode, MediaEncode, HasMediaType)
+import Hreq.Core.API.MediaType (HasMediaType, MediaDecode, MediaEncode)
+import Hreq.Core.API.Request (ReqContent (..))
+import Hreq.Core.API.Response (ResContent (..))
 import Hreq.Core.API.Streaming (HasStreamBody)
 import Hreq.Core.API.Verb (Verb)
+import Hreq.Core.Client.BasicAuth (BasicAuthData)
 
 -- | 'ApiToReq' transforms an API type into a type level list of
 -- Request component content types.

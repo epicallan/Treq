@@ -35,16 +35,16 @@ instance Monad (ClientPure state)  where
 
   m >>= f = case m of
     RunClient r x -> setHttpRequest r $ f x
-    Throw e     -> Throw e
+    Throw e       -> Throw e
 
 instance Applicative (ClientPure state) where
   pure = RunClient defaultRequest
 
   f <*> x = case x of
-    Throw e     -> Throw e
+    Throw e       -> Throw e
     RunClient r y -> setHttpRequest r $ fmap ( $ y) f
 
 setHttpRequest :: Request -> ClientPure state a -> ClientPure state a
 setHttpRequest r h = case h of
   RunClient _ rs -> RunClient r rs
-  Throw e      -> Throw e
+  Throw e        -> Throw e

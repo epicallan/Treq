@@ -15,7 +15,7 @@
     ===Attribution
     Some of the code in this module was directly borrowed from the Singletons library
 -}
-{-# LANGUAGE CPP #-}
+{-# LANGUAGE CPP       #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
 module Data.Singletons where
@@ -23,7 +23,7 @@ module Data.Singletons where
 import Data.Kind
 
 #if MIN_VERSION_base(4,18,0)
-import GHC.TypeLits hiding (SSymbol, SNat)
+import GHC.TypeLits hiding (SNat, SSymbol)
 #else
 import GHC.TypeLits
 #endif
